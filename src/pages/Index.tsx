@@ -132,8 +132,11 @@ const Index = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="max-w-3xl"
+              className="flex flex-col items-center text-center max-w-3xl mx-auto"
             >
+              <h2 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+                Skyrise
+              </h2>
               <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-background/40 backdrop-blur-sm px-4 py-1.5 text-sm text-muted-foreground">
                 <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
                 Platform Operational
@@ -146,18 +149,18 @@ const Index = () => {
                 Earn by completing simple promotional assignments while helping premium automotive brands reach real audiences worldwide.
               </p>
               <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Button asChild size="lg" className="btn-press gap-2 px-8">
+                <Button asChild size="lg" className="btn-press gap-2 px-10 h-12 text-base">
                   <Link to="/register">
                     Register <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="btn-press px-8">
+                <Button asChild variant="outline" size="lg" className="btn-press px-10 h-12 text-base">
                   <Link to="/login">Login</Link>
                 </Button>
                 <Button
                   variant="ghost"
                   size="lg"
-                  className="btn-press px-6 text-muted-foreground hover:text-foreground"
+                  className="btn-press px-6 h-12 text-base text-muted-foreground hover:text-foreground"
                   onClick={() => setChatOpen(true)}
                 >
                   <MessageCircle className="mr-2 h-4 w-4" strokeWidth={1.5} />
@@ -323,12 +326,12 @@ const Index = () => {
               Join thousands of promoters earning daily by helping premium automotive brands grow their audience.
             </p>
             <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-              <Button asChild size="lg" className="btn-press gap-2 px-8">
+              <Button asChild size="lg" className="btn-press gap-2 px-10 h-12 text-base">
                 <Link to="/register">
                   Register <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="btn-press px-8">
+              <Button asChild variant="outline" size="lg" className="btn-press px-10 h-12 text-base">
                 <Link to="/login">Login</Link>
               </Button>
             </div>
