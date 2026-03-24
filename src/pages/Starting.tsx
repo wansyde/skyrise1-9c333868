@@ -82,17 +82,21 @@ const Starting = () => {
   // Get offset from center for 3D transform
   const getCardStyle = (offset: number) => {
     const absOffset = Math.abs(offset);
-    const scale = offset === 0 ? 1 : Math.max(0.65, 1 - absOffset * 0.15);
-    const rotateY = offset * -25;
-    const translateX = offset * 90;
-    const translateZ = offset === 0 ? 40 : -absOffset * 80;
-    const opacity = offset === 0 ? 1 : Math.max(0.3, 1 - absOffset * 0.3);
+    const scale = offset === 0 ? 1.08 : Math.max(0.68, 1 - absOffset * 0.14);
+    const rotateY = offset * -22;
+    const translateX = offset * 95;
+    const translateZ = offset === 0 ? 60 : -absOffset * 70;
+    const opacity = offset === 0 ? 1 : Math.max(0.45, 1 - absOffset * 0.25);
     const zIndex = 10 - absOffset;
+    const brightness = offset === 0 ? 1.12 : Math.max(0.7, 1 - absOffset * 0.15);
+    const contrast = offset === 0 ? 1.1 : 1;
+    const saturate = offset === 0 ? 1.15 : Math.max(0.85, 1 - absOffset * 0.1);
 
     return {
       transform: `perspective(1200px) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
       opacity,
       zIndex,
+      filter: `brightness(${brightness}) contrast(${contrast}) saturate(${saturate})`,
     };
   };
 
@@ -183,15 +187,16 @@ const Starting = () => {
 
           {/* 3D Carousel Container */}
           <div
-            className="relative h-56 flex items-center justify-center overflow-hidden"
+            className="relative h-64 flex items-center justify-center overflow-hidden"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
             style={{
               background: "radial-gradient(ellipse at center bottom, hsl(var(--primary) / 0.06) 0%, transparent 70%)",
             }}
           >
-            {visibleCards.map(({ idx, offset, car }) => {
+          {visibleCards.map(({ idx, offset, car }) => {
               const style = getCardStyle(offset);
+              const isCenter = offset === 0;
               return (
                 <motion.div
                   key={`${idx}-${car.brand}`}
@@ -201,35 +206,67 @@ const Starting = () => {
                     transform: style.transform,
                     opacity: style.opacity,
                     zIndex: style.zIndex,
+                    filter: style.filter,
                   }}
                   transition={{ type: "spring", stiffness: 260, damping: 26 }}
                   style={{ zIndex: style.zIndex }}
                 >
-                  <div
-                    className="w-32 h-44 rounded-2xl overflow-hidden relative"
-                    style={{
-                      boxShadow: offset === 0
-                        ? "0 16px 48px rgba(0,0,0,0.6), 0 0 20px hsl(var(--primary) / 0.15)"
-                        : "0 4px 16px rgba(0,0,0,0.4)",
-                    }}
-                  >
-                    <img
-                      src={car.image}
-                      alt={car.brand}
-                      loading="lazy"
-                      className="w-full h-full object-cover"
-                    />
-                    {/* Subtle reflection */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-black/40" />
-                    {/* Brand label only on active */}
-                    {offset === 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-background/90 to-transparent"
-                      >
-                        <p className="text-[11px] font-semibold text-center truncate">{car.brand}</p>
-                      </motion.div>
+                  {/* Card with showroom floor reflection */}
+                  <div className="flex flex-col items-center">
+                    <div
+                      className="w-32 h-44 rounded-2xl overflow-hidden relative"
+                      style={{
+                        boxShadow: isCenter
+                          ? "0 20px 60px rgba(0,0,0,0.5), 0 0 30px hsl(var(--primary) / 0.12), 0 0 80px hsl(var(--primary) / 0.06)"
+                          : "0 8px 24px rgba(0,0,0,0.35)",
+                      }}
+                    >
+                      <img
+                        src={car.image}
+                        alt={car.brand}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Very subtle top highlight for 3D edge lighting */}
+                      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                      {/* Subtle side edge highlights */}
+                      <div className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-white/10 via-transparent to-transparent" />
+                      <div className="absolute inset-y-0 right-0 w-px bg-gradient-to-b from-white/10 via-transparent to-transparent" />
+                      {/* Brand label only on active */}
+                      {isCenter && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-background/70 to-transparent"
+                        >
+                          <p className="text-[11px] font-semibold text-center truncate">{car.brand}</p>
+                        </motion.div>
+                      )}
+                    </div>
+                    {/* Showroom floor reflection */}
+                    <div
+                      className="w-28 h-10 mt-0.5 rounded-b-2xl overflow-hidden opacity-30"
+                      style={{
+                        transform: "scaleY(-1) scaleX(0.92)",
+                        maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.4), transparent)",
+                        WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.4), transparent)",
+                      }}
+                    >
+                      <img
+                        src={car.image}
+                        alt=""
+                        className="w-full h-44 object-cover object-bottom"
+                        style={{ filter: "blur(2px)" }}
+                      />
+                    </div>
+                    {/* Soft glow under center car */}
+                    {isCenter && (
+                      <div
+                        className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-24 h-4 rounded-full"
+                        style={{
+                          background: "radial-gradient(ellipse, hsl(var(--primary) / 0.15) 0%, transparent 70%)",
+                        }}
+                      />
                     )}
                   </div>
                 </motion.div>
@@ -273,7 +310,7 @@ const Starting = () => {
               transition={{ duration: 0.5 }}
             />
           </AnimatePresence>
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-5">
             <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Featured</p>
             <h3 className="text-lg font-bold">{featuredCar.brand}</h3>
