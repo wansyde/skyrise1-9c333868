@@ -124,7 +124,19 @@ const Starting = () => {
 
   return (
     <AppLayout>
-      <div className="px-4 py-5 pb-8">
+      <div
+        className="px-4 py-5 pb-8 min-h-screen relative"
+        style={{
+          background: "radial-gradient(ellipse at 50% 20%, hsl(var(--primary) / 0.04) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, hsl(var(--primary) / 0.03) 0%, transparent 40%), linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background) / 0.97) 100%)",
+        }}
+      >
+        {/* Subtle tire track / road line accent */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.03]">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-gradient-to-b from-transparent via-foreground to-transparent" />
+          <div className="absolute top-0 left-[calc(50%-3px)] w-px h-full bg-gradient-to-b from-transparent via-foreground/50 to-transparent" />
+          <div className="absolute top-0 left-[calc(50%+3px)] w-px h-full bg-gradient-to-b from-transparent via-foreground/50 to-transparent" />
+        </div>
+        <div className="relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -280,26 +292,38 @@ const Starting = () => {
           </div>
         </motion.div>
 
-        {/* Featured Car Display */}
+        {/* Featured Car Display - 3D */}
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
           className="mb-6 rounded-2xl overflow-hidden relative"
-          style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)" }}
+          style={{
+            boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)",
+            background: "radial-gradient(ellipse at center, hsl(var(--card) / 0.6) 0%, hsl(var(--background)) 70%)",
+            perspective: "1000px",
+          }}
         >
           <AnimatePresence mode="wait">
             <motion.img
               key={featuredCar.brand}
               src={featuredCar.image}
               alt={featuredCar.brand}
-              className="w-full h-80 object-contain"
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.5 }}
+              className="w-full h-96 object-contain drop-shadow-2xl"
+              initial={{ opacity: 0, scale: 1.08, rotateY: 5 }}
+              animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+              exit={{ opacity: 0, scale: 0.92, rotateY: -5 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              style={{ filter: "brightness(1.05) contrast(1.05) saturate(1.1)" }}
             />
           </AnimatePresence>
+          {/* Showroom floor reflection */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-16 opacity-20"
+            style={{
+              background: "linear-gradient(to top, hsl(var(--primary) / 0.08), transparent)",
+            }}
+          />
         </motion.div>
 
         {/* Start Task Button */}
@@ -364,6 +388,7 @@ const Starting = () => {
             </div>
           </div>
         </motion.div>
+        </div>
       </div>
     </AppLayout>
   );
