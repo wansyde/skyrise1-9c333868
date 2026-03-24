@@ -2,7 +2,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wallet, DollarSign, Play, ChevronRight, Clock, Headphones } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import bmwImg from "@/assets/cars/bmw.jpg";
 import mercedesImg from "@/assets/cars/mercedes.jpg";
@@ -48,50 +48,75 @@ const carCampaigns = [
   { brand: "Alfa Romeo", image: alfaRomeoImg },
 ];
 
+const VISIBLE_COUNT = 5;
+
 const Starting = () => {
   const { profile } = useAuth();
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const todaySalary = 0;
-
   const userName = profile?.full_name || "User";
+  const total = carCampaigns.length;
 
-  // Auto-scroll carousel
+  // Auto-slide
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % carCampaigns.length);
+      setActiveIndex((prev) => (prev + 1) % total);
     }, 4000);
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, total]);
 
-  // Scroll to active card
-  useEffect(() => {
-    if (scrollRef.current) {
-      const card = scrollRef.current.children[activeIndex] as HTMLElement;
-      if (card) {
-        const scrollLeft = card.offsetLeft - scrollRef.current.offsetWidth / 2 + card.offsetWidth / 2;
-        scrollRef.current.scrollTo({ left: scrollLeft, behavior: "smooth" });
-      }
-    }
-  }, [activeIndex]);
-
-  const handleScroll = useCallback(() => {
-    if (!scrollRef.current) return;
-    const container = scrollRef.current;
-    const center = container.scrollLeft + container.offsetWidth / 2;
-    let closest = 0;
-    let minDist = Infinity;
-    Array.from(container.children).forEach((child, i) => {
-      const el = child as HTMLElement;
-      const elCenter = el.offsetLeft + el.offsetWidth / 2;
-      const dist = Math.abs(center - elCenter);
-      if (dist < minDist) { minDist = dist; closest = i; }
-    });
-    setActiveIndex(closest);
+  // Pause on interaction
+  const handleInteraction = useCallback(() => {
+    setIsPaused(true);
+    const timeout = setTimeout(() => setIsPaused(false), 8000);
+    return () => clearTimeout(timeout);
   }, []);
 
+  const goTo = useCallback((i: number) => {
+    setActiveIndex(i);
+    handleInteraction();
+  }, [handleInteraction]);
+
+  // Get offset from center for 3D transform
+  const getCardStyle = (offset: number) => {
+    const absOffset = Math.abs(offset);
+    const scale = offset === 0 ? 1 : Math.max(0.65, 1 - absOffset * 0.15);
+    const rotateY = offset * -25;
+    const translateX = offset * 90;
+    const translateZ = offset === 0 ? 40 : -absOffset * 80;
+    const opacity = offset === 0 ? 1 : Math.max(0.3, 1 - absOffset * 0.3);
+    const zIndex = 10 - absOffset;
+
+    return {
+      transform: `perspective(1200px) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
+      opacity,
+      zIndex,
+    };
+  };
+
+  // Visible cards around active
+  const visibleCards = [];
+  const half = Math.floor(VISIBLE_COUNT / 2);
+  for (let offset = -half; offset <= half; offset++) {
+    const idx = ((activeIndex + offset) % total + total) % total;
+    visibleCards.push({ idx, offset, car: carCampaigns[idx] });
+  }
+
   const featuredCar = carCampaigns[activeIndex];
+
+  // Swipe handling
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX);
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStart === null) return;
+    const diff = touchStart - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) {
+      goTo(diff > 0 ? (activeIndex + 1) % total : (activeIndex - 1 + total) % total);
+    }
+    setTouchStart(null);
+  };
 
   return (
     <AppLayout>
@@ -142,7 +167,7 @@ const Starting = () => {
           </motion.div>
         </div>
 
-        {/* Car Slideshow */}
+        {/* 3D Car Carousel */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -153,48 +178,71 @@ const Starting = () => {
             <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
               Campaigns
             </h2>
-            <span className="text-[10px] text-muted-foreground">{carCampaigns.length} available</span>
+            <span className="text-[10px] text-muted-foreground">{total} available</span>
           </div>
+
+          {/* 3D Carousel Container */}
           <div
-            ref={scrollRef}
-            onScroll={handleScroll}
-            className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            className="relative h-56 flex items-center justify-center overflow-hidden"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            style={{
+              background: "radial-gradient(ellipse at center bottom, hsl(var(--primary) / 0.06) 0%, transparent 70%)",
+            }}
           >
-            {carCampaigns.map((car, i) => (
-              <motion.div
-                key={car.brand}
-                className={`flex-shrink-0 snap-center rounded-2xl overflow-hidden relative transition-all duration-500 ${
-                  i === activeIndex ? "w-36 h-48" : "w-28 h-44 opacity-60"
-                }`}
-                style={{
-                  boxShadow: i === activeIndex
-                    ? "0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)"
-                    : "0 2px 8px rgba(0,0,0,0.3)",
-                }}
-              >
-                <img
-                  src={car.image}
-                  alt={car.brand}
-                  loading="lazy"
-                  width={640}
-                  height={800}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                  <p className="text-[11px] font-semibold truncate">{car.brand} Campaign</p>
-                  <p className="text-[10px] text-success font-medium tabular-nums">+${car.reward.toFixed(2)}</p>
-                </div>
-              </motion.div>
-            ))}
+            {visibleCards.map(({ idx, offset, car }) => {
+              const style = getCardStyle(offset);
+              return (
+                <motion.div
+                  key={`${idx}-${car.brand}`}
+                  className="absolute cursor-pointer"
+                  onClick={() => goTo(idx)}
+                  animate={{
+                    transform: style.transform,
+                    opacity: style.opacity,
+                    zIndex: style.zIndex,
+                  }}
+                  transition={{ type: "spring", stiffness: 260, damping: 26 }}
+                  style={{ zIndex: style.zIndex }}
+                >
+                  <div
+                    className="w-32 h-44 rounded-2xl overflow-hidden relative"
+                    style={{
+                      boxShadow: offset === 0
+                        ? "0 16px 48px rgba(0,0,0,0.6), 0 0 20px hsl(var(--primary) / 0.15)"
+                        : "0 4px 16px rgba(0,0,0,0.4)",
+                    }}
+                  >
+                    <img
+                      src={car.image}
+                      alt={car.brand}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                    {/* Subtle reflection */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-black/40" />
+                    {/* Brand label only on active */}
+                    {offset === 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="absolute bottom-0 left-0 right-0 p-2.5 bg-gradient-to-t from-background/90 to-transparent"
+                      >
+                        <p className="text-[11px] font-semibold text-center truncate">{car.brand}</p>
+                      </motion.div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
+
           {/* Dot indicators */}
           <div className="flex justify-center gap-1 mt-3">
             {carCampaigns.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setActiveIndex(i)}
+                onClick={() => goTo(i)}
                 className={`rounded-full transition-all duration-300 ${
                   i === activeIndex
                     ? "w-5 h-1.5 bg-primary"
@@ -218,60 +266,29 @@ const Starting = () => {
               key={featuredCar.brand}
               src={featuredCar.image}
               alt={featuredCar.brand}
-              width={640}
-              height={800}
               className="w-full h-56 object-cover"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.5 }}
             />
           </AnimatePresence>
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-5">
-            <div className="flex items-end justify-between">
-              <div>
-                <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Featured</p>
-                <h3 className="text-lg font-bold">{featuredCar.brand}</h3>
-                <p className="text-xs text-muted-foreground">{featuredCar.model}</p>
-              </div>
-              <span className="text-base font-bold text-success tabular-nums">+${featuredCar.reward.toFixed(2)}</span>
-            </div>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Featured</p>
+            <h3 className="text-lg font-bold">{featuredCar.brand}</h3>
           </div>
-        </motion.div>
-
-        {/* Progress Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35, duration: 0.5 }}
-          className="glass-card p-4 mb-4"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-muted-foreground">Task Progress</span>
-            <span className="text-xs tabular-nums font-semibold">{completedTasks} / {totalTasks}</span>
-          </div>
-          <div className="progress-track h-2.5">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${(completedTasks / totalTasks) * 100}%` }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
-              className="progress-fill h-2.5"
-            />
-          </div>
-          <p className="text-[10px] text-muted-foreground mt-1.5">
-            {Math.round((completedTasks / totalTasks) * 100)}% completed today
-          </p>
         </motion.div>
 
         {/* Start Task Button */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
+          transition={{ delay: 0.35, duration: 0.5 }}
           className="mb-6"
         >
-          <button className="w-full py-4 rounded-full font-semibold text-sm tracking-wide flex items-center justify-center gap-2 btn-press transition-all duration-300 bg-card text-foreground border border-border hover:border-primary/30"
+          <button
+            className="w-full py-4 rounded-full font-semibold text-sm tracking-wide flex items-center justify-center gap-2 btn-press transition-all duration-300 bg-card text-foreground border border-border hover:border-primary/30"
             style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.2)" }}
           >
             <Play className="h-4 w-4 text-primary" fill="hsl(var(--primary))" />
@@ -284,7 +301,7 @@ const Starting = () => {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45, duration: 0.5 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
           className="glass-card p-4 mb-5"
         >
           <div className="flex items-center justify-between">
@@ -300,7 +317,7 @@ const Starting = () => {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
+          transition={{ delay: 0.45, duration: 0.5 }}
           className="glass-card p-5 border border-border/50"
         >
           <h3 className="text-sm font-semibold mb-3">Important Notes</h3>
