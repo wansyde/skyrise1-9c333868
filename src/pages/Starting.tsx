@@ -124,7 +124,19 @@ const Starting = () => {
 
   return (
     <AppLayout>
-      <div className="px-4 py-5 pb-8">
+      <div
+        className="px-4 py-5 pb-8 min-h-screen relative"
+        style={{
+          background: "radial-gradient(ellipse at 50% 20%, hsl(var(--primary) / 0.04) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, hsl(var(--primary) / 0.03) 0%, transparent 40%), linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background) / 0.97) 100%)",
+        }}
+      >
+        {/* Subtle tire track / road line accent */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.03]">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-full bg-gradient-to-b from-transparent via-foreground to-transparent" />
+          <div className="absolute top-0 left-[calc(50%-3px)] w-px h-full bg-gradient-to-b from-transparent via-foreground/50 to-transparent" />
+          <div className="absolute top-0 left-[calc(50%+3px)] w-px h-full bg-gradient-to-b from-transparent via-foreground/50 to-transparent" />
+        </div>
+        <div className="relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
