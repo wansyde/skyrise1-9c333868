@@ -2,7 +2,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wallet, DollarSign, Play, ChevronRight, Clock, Headphones } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 
 import bmwImg from "@/assets/cars/bmw.jpg";
 import mercedesImg from "@/assets/cars/mercedes.jpg";
