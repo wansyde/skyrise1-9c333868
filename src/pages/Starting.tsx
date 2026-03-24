@@ -388,6 +388,7 @@ const Starting = () => {
             </div>
           </div>
         </motion.div>
+        </div>
       </div>
     </AppLayout>
   );
