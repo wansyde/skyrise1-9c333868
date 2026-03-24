@@ -58,11 +58,12 @@ const Starting = () => {
 
   // Auto-scroll carousel
   useEffect(() => {
+    if (isPaused) return;
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % carCampaigns.length);
-    }, 3000);
+    }, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isPaused]);
 
   // Scroll to active card
   useEffect(() => {
