@@ -434,9 +434,9 @@ const Starting = () => {
             {carCampaigns.map((_, i) => (
               <button
                 key={i}
-                onClick={() => { setFeaturedIndex(i); handleFeaturedInteraction(); }}
+                onClick={() => goTo(i)}
                 className={`rounded-full transition-all duration-300 ${
-                  i === featuredIndex
+                  i === activeIndex
                     ? "w-4 h-1 bg-primary/70"
                     : "w-1 h-1 bg-muted-foreground/20"
                 }`}
