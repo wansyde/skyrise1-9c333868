@@ -269,10 +269,10 @@ const Login = () => {
 
                   <form onSubmit={handleLogin} className="flex flex-col gap-4">
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-sm font-medium">Account (Email)</label>
+                      <label className="text-sm font-medium">User ID</label>
                       <Input
-                        type="email"
-                        placeholder="you@example.com"
+                        type="text"
+                        placeholder="Enter your username"
                         required
                         className="bg-background"
                         value={loginAccount}
