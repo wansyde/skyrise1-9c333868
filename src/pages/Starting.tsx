@@ -96,11 +96,6 @@ const Starting = () => {
     return () => clearTimeout(timeout);
   }, []);
 
-  const handleFeaturedInteraction = useCallback(() => {
-    setFeaturedPaused(true);
-    const timeout = setTimeout(() => setFeaturedPaused(false), 8000);
-    return () => clearTimeout(timeout);
-  }, []);
 
   const goTo = useCallback((i: number) => {
     setActiveIndex(i);
