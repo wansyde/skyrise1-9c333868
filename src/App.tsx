@@ -33,6 +33,7 @@ import Certificate from "./pages/Certificate";
 import TermsConditions from "./pages/TermsConditions";
 import Event from "./pages/Event";
 import AML from "./pages/AML";
+import PersonalInfo from "./pages/PersonalInfo";
 
 // Admin
 import AdminPanel from "./pages/AdminPanel";
