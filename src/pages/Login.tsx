@@ -86,14 +86,11 @@ const Login = () => {
     }
     setLoginLoading(true);
     try {
-      // Look up email by username from profiles
-      const { data: profileData, error: profileError } = await supabase
-        .from("profiles")
-        .select("email")
-        .eq("username", loginAccount.trim())
-        .maybeSingle();
+      // Look up email by username using secure RPC function
+      const { data: userEmail, error: lookupError } = await supabase
+        .rpc("get_email_by_username", { _username: loginAccount.trim() });
 
-      if (profileError || !profileData?.email) {
+      if (lookupError || !userEmail) {
         toast.error("User ID not found. Please check and try again.");
         setLoginLoading(false);
         return;
