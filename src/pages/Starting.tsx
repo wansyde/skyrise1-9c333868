@@ -76,8 +76,6 @@ const Starting = () => {
   const { profile } = useAuth();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [featuredIndex, setFeaturedIndex] = useState(0);
-  const [featuredPaused, setFeaturedPaused] = useState(false);
   const todaySalary = 0;
   const userName = profile?.full_name || "User";
   const total = carCampaigns.length;
