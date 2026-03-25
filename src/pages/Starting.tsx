@@ -131,7 +131,7 @@ const Starting = () => {
     visibleCards.push({ idx, offset, car: carCampaigns[idx] });
   }
 
-  const featuredCar = carCampaigns[featuredIndex];
+  const featuredCar = carCampaigns[activeIndex];
 
   // Swipe handling for top carousel
   const [touchStart, setTouchStart] = useState<number | null>(null);
