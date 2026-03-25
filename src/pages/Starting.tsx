@@ -320,7 +320,7 @@ const Starting = () => {
                       <img
                         src={car.image}
                         alt=""
-                        className="w-full h-44 object-cover object-bottom"
+                        className="w-full h-56 sm:h-64 object-cover object-bottom"
                         style={{ filter: "blur(2px)" }}
                       />
                     </div>
