@@ -74,6 +74,7 @@ const Index = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
   const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const nextSlide = useCallback(() => {
