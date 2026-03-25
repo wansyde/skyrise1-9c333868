@@ -74,6 +74,7 @@ const App = () => (
             <Route path="/app/terms" element={<ProtectedRoute><TermsConditions /></ProtectedRoute>} />
             <Route path="/app/event" element={<ProtectedRoute><Event /></ProtectedRoute>} />
             <Route path="/app/aml" element={<ProtectedRoute><AML /></ProtectedRoute>} />
+            <Route path="/app/settings" element={<ProtectedRoute><PersonalInfo /></ProtectedRoute>} />
 
             {/* Admin */}
             <Route path="/admin" element={<ProtectedRoute adminOnly><AdminPanel /></ProtectedRoute>} />
