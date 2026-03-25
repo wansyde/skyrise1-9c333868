@@ -392,7 +392,7 @@ const Starting = () => {
                   <img
                     src={featuredCar.featured}
                     alt={featuredCar.brand}
-                    className="w-full aspect-[16/10] object-cover rounded-2xl"
+                    className="w-full aspect-[16/9] object-cover rounded-2xl"
                     style={{
                       filter: "brightness(1.08) contrast(1.06) saturate(1.12)",
                     }}
