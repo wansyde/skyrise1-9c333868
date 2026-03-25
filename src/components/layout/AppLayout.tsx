@@ -32,6 +32,7 @@ const slideMenuItems = [
 const AppLayout = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { profile } = useAuth();
 
   const isActive = (href: string) => {
     if (href === "/app") return location.pathname === "/app";
