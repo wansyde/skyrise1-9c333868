@@ -97,7 +97,7 @@ const Login = () => {
       }
 
       const { error } = await supabase.auth.signInWithPassword({
-        email: profileData.email,
+        email: userEmail,
         password: loginPassword,
       });
       if (error) {
