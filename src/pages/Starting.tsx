@@ -145,29 +145,25 @@ const Starting = () => {
     setTouchStart(null);
   };
 
-  // Swipe handling for featured carousel
+  // Swipe handling for featured carousel (synced to shared index)
   const [featuredTouchStart, setFeaturedTouchStart] = useState<number | null>(null);
   const handleFeaturedTouchStart = (e: React.TouchEvent) => setFeaturedTouchStart(e.touches[0].clientX);
   const handleFeaturedTouchEnd = (e: React.TouchEvent) => {
     if (featuredTouchStart === null) return;
     const diff = featuredTouchStart - e.changedTouches[0].clientX;
     if (Math.abs(diff) > 40) {
-      const next = diff > 0 ? (featuredIndex + 1) % total : (featuredIndex - 1 + total) % total;
-      setFeaturedIndex(next);
-      handleFeaturedInteraction();
+      goTo(diff > 0 ? (activeIndex + 1) % total : (activeIndex - 1 + total) % total);
     }
     setFeaturedTouchStart(null);
   };
 
   const goFeaturedPrev = useCallback(() => {
-    setFeaturedIndex((prev) => (prev - 1 + total) % total);
-    handleFeaturedInteraction();
-  }, [total, handleFeaturedInteraction]);
+    goTo((activeIndex - 1 + total) % total);
+  }, [activeIndex, total, goTo]);
 
   const goFeaturedNext = useCallback(() => {
-    setFeaturedIndex((prev) => (prev + 1) % total);
-    handleFeaturedInteraction();
-  }, [total, handleFeaturedInteraction]);
+    goTo((activeIndex + 1) % total);
+  }, [activeIndex, total, goTo]);
 
   return (
     <AppLayout>
