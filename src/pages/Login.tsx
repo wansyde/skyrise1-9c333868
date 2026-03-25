@@ -86,13 +86,26 @@ const Login = () => {
     }
     setLoginLoading(true);
     try {
+      // Look up email by username from profiles
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("username", loginAccount.trim())
+        .maybeSingle();
+
+      if (profileError || !profileData?.email) {
+        toast.error("User ID not found. Please check and try again.");
+        setLoginLoading(false);
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
-        email: loginAccount.trim(),
+        email: profileData.email,
         password: loginPassword,
       });
       if (error) {
         toast.error(error.message === "Invalid login credentials"
-          ? "Invalid login credentials. Please check your email and password."
+          ? "Invalid credentials. Please check your User ID and password."
           : error.message);
       } else {
         toast.success("Welcome back!");
