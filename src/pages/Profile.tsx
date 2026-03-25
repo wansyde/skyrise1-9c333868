@@ -61,7 +61,7 @@ const Profile = () => {
       <div className="px-4 py-5">
         {/* Hero banner area */}
         <div className="relative mb-5 rounded-2xl overflow-hidden">
-          <div className="h-32 bg-gradient-to-br from-card via-card to-muted" />
+          <img src={heroCarBanner} alt="Profile banner" className="h-32 w-full object-cover" width={1920} height={768} />
 
           {/* Avatar + user info overlapping */}
           <div className="relative -mt-10 px-4 pb-4">
