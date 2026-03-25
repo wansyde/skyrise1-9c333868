@@ -76,11 +76,13 @@ const Starting = () => {
   const { profile } = useAuth();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [featuredIndex, setFeaturedIndex] = useState(0);
+  const [featuredPaused, setFeaturedPaused] = useState(false);
   const todaySalary = 0;
   const userName = profile?.full_name || "User";
   const total = carCampaigns.length;
 
-  // Auto-slide
+  // Auto-slide for top carousel
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
@@ -89,10 +91,25 @@ const Starting = () => {
     return () => clearInterval(interval);
   }, [isPaused, total]);
 
+  // Auto-slide for featured carousel
+  useEffect(() => {
+    if (featuredPaused) return;
+    const interval = setInterval(() => {
+      setFeaturedIndex((prev) => (prev + 1) % total);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [featuredPaused, total]);
+
   // Pause on interaction
   const handleInteraction = useCallback(() => {
     setIsPaused(true);
     const timeout = setTimeout(() => setIsPaused(false), 8000);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const handleFeaturedInteraction = useCallback(() => {
+    setFeaturedPaused(true);
+    const timeout = setTimeout(() => setFeaturedPaused(false), 8000);
     return () => clearTimeout(timeout);
   }, []);
 
