@@ -362,23 +362,30 @@ const Index = () => {
                   <div className="text-center py-4">
                     <CheckCircle2 className="mx-auto h-8 w-8 text-success mb-2" />
                     <p className="text-sm font-medium">Thank you!</p>
-                    <p className="text-xs text-muted-foreground mt-1">Our team will contact you shortly.</p>
+                    <p className="text-xs text-muted-foreground mt-1">Our team will reach out to you on WhatsApp shortly.</p>
                   </div>
                 ) : (
                   <>
                     <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-                      We are currently unavailable. Please leave your number and our team will contact you.
+                      We're currently unavailable. Please leave your WhatsApp number and a message — our team will get back to you as soon as possible.
                     </p>
-                    <form onSubmit={handlePhoneSubmit} className="flex gap-2">
+                    <form onSubmit={handlePhoneSubmit} className="space-y-3">
                       <Input
                         type="tel"
-                        placeholder="Your phone number"
+                        placeholder="WhatsApp number"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         className="text-sm h-9"
                       />
-                      <Button type="submit" size="sm" className="btn-press h-9 px-3">
+                      <textarea
+                        placeholder="Your message (optional)"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        className="w-full rounded-md border border-border bg-input px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring resize-none h-20"
+                      />
+                      <Button type="submit" size="sm" className="btn-press h-9 w-full gap-2">
                         <Send className="h-3.5 w-3.5" />
+                        Send Message
                       </Button>
                     </form>
                   </>
