@@ -86,13 +86,23 @@ const Login = () => {
     }
     setLoginLoading(true);
     try {
+      // Look up email by username using secure RPC function
+      const { data: userEmail, error: lookupError } = await supabase
+        .rpc("get_email_by_username", { _username: loginAccount.trim() });
+
+      if (lookupError || !userEmail) {
+        toast.error("User ID not found. Please check and try again.");
+        setLoginLoading(false);
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
-        email: loginAccount.trim(),
+        email: userEmail,
         password: loginPassword,
       });
       if (error) {
         toast.error(error.message === "Invalid login credentials"
-          ? "Invalid login credentials. Please check your email and password."
+          ? "Invalid credentials. Please check your User ID and password."
           : error.message);
       } else {
         toast.success("Welcome back!");
@@ -269,10 +279,10 @@ const Login = () => {
 
                   <form onSubmit={handleLogin} className="flex flex-col gap-4">
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-sm font-medium">Account (Email)</label>
+                      <label className="text-sm font-medium">User ID</label>
                       <Input
-                        type="email"
-                        placeholder="you@example.com"
+                        type="text"
+                        placeholder="Enter your username"
                         required
                         className="bg-background"
                         value={loginAccount}
