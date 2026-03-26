@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import skyriseLogo from "@/assets/skyrise-logo.png";
 
 const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
