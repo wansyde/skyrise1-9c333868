@@ -203,7 +203,7 @@ const Login = () => {
             <img src={slide} alt={`Luxury car ${i + 1}`} className="h-full w-full object-cover" />
           </motion.div>
         ))}
-        <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-white" />
         <div className="absolute inset-0 flex flex-col items-center justify-center px-12 z-10">
           <Link to="/" className="mb-6">
             <SkyriseLogo className="h-10 w-auto" />
