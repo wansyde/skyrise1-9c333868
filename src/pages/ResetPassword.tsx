@@ -49,8 +49,8 @@ const ResetPassword = () => {
         className="relative z-10 w-full max-w-sm"
       >
         <div className="mb-8 text-center">
-          <Link to="/" className="text-xl font-semibold tracking-tight">
-            Sky<span className="text-primary">rise</span>
+          <Link to="/">
+            <img src={skyriseLogo} alt="Skyrise" className="h-9 w-auto mx-auto" />
           </Link>
           <h1 className="mt-6 text-2xl font-semibold tracking-tight">Set new password</h1>
           <p className="mt-2 text-sm text-muted-foreground">Enter your new password below.</p>
