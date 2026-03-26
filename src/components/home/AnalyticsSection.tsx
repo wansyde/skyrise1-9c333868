@@ -103,16 +103,50 @@ const AnalyticsSection = () => (
         <div
           className="relative min-h-[340px] sm:min-h-[420px] rounded-xl overflow-hidden"
           style={{
-            background: "linear-gradient(180deg, hsl(var(--secondary)) 0%, hsl(var(--card)) 100%)",
+            background: "linear-gradient(180deg, hsl(250 20% 97%) 0%, hsl(250 15% 94%) 100%)",
           }}
         >
-          {/* Map dots */}
+          {/* World Map SVG */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-[0.12]">
+            <svg viewBox="0 0 1000 500" className="w-[95%] h-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Simplified world map paths */}
+              <g fill="hsl(255 40% 45%)" fillRule="evenodd">
+                {/* North America */}
+                <path d="M150 120 Q170 100 210 95 Q240 90 260 100 Q275 105 280 120 Q285 135 275 150 Q265 160 255 165 Q250 175 240 185 Q230 190 220 195 Q210 200 195 195 Q180 190 170 180 Q160 170 150 155 Q145 140 150 120Z" />
+                <path d="M195 195 Q200 205 210 215 Q215 225 210 235 Q200 240 190 235 Q185 225 185 215 Q185 205 195 195Z" />
+                {/* South America */}
+                <path d="M240 260 Q250 250 265 255 Q275 260 280 275 Q285 295 280 315 Q275 335 265 350 Q255 365 245 370 Q235 375 230 365 Q225 350 220 335 Q215 315 220 295 Q225 275 240 260Z" />
+                {/* Europe */}
+                <path d="M440 100 Q455 90 475 95 Q490 100 500 110 Q505 120 500 130 Q495 140 485 145 Q475 150 465 148 Q455 145 448 138 Q440 130 438 120 Q436 110 440 100Z" />
+                {/* Africa */}
+                <path d="M460 180 Q475 170 490 175 Q505 180 515 195 Q520 210 520 230 Q518 250 510 270 Q500 290 490 305 Q480 315 470 310 Q460 305 455 290 Q448 270 445 250 Q442 230 445 210 Q448 190 460 180Z" />
+                {/* Asia */}
+                <path d="M520 80 Q550 70 580 75 Q610 80 640 90 Q670 100 700 95 Q730 90 750 100 Q770 110 780 125 Q785 140 775 155 Q760 165 740 160 Q720 155 700 160 Q680 165 660 158 Q640 150 620 155 Q600 160 580 155 Q560 148 545 140 Q530 130 520 120 Q515 105 520 80Z" />
+                {/* Middle East */}
+                <path d="M540 155 Q555 148 570 155 Q580 165 575 180 Q565 190 550 185 Q540 175 540 165 Q540 158 540 155Z" />
+                {/* India */}
+                <path d="M620 165 Q635 158 645 170 Q650 185 648 200 Q642 215 635 225 Q625 230 618 220 Q612 208 612 195 Q614 180 620 165Z" />
+                {/* Southeast Asia */}
+                <path d="M700 170 Q715 165 730 175 Q740 185 735 200 Q725 208 715 205 Q705 200 700 190 Q698 180 700 170Z" />
+                {/* Australia */}
+                <path d="M740 300 Q760 290 785 295 Q805 300 815 315 Q820 330 810 345 Q795 355 775 350 Q755 345 745 332 Q738 318 740 300Z" />
+                {/* Japan */}
+                <path d="M785 115 Q790 108 795 115 Q798 125 795 135 Q790 140 785 135 Q782 125 785 115Z" />
+                {/* UK/Ireland */}
+                <path d="M435 100 Q440 95 445 100 Q448 108 445 115 Q440 118 435 112 Q432 106 435 100Z" />
+                {/* Greenland */}
+                <path d="M310 55 Q330 48 345 55 Q355 65 350 78 Q340 85 325 82 Q310 78 308 68 Q306 60 310 55Z" />
+              </g>
+            </svg>
+          </div>
+
+          {/* Animated hotspot dots on the map */}
           <div className="absolute inset-0">
             {mapDots.map((dot, i) => (
               <motion.div
                 key={i}
                 initial={{ scale: 0, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 0.85 }}
+                whileInView={{ scale: 1, opacity: 0.9 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3 + i * 0.03, duration: 0.35 }}
                 className="absolute rounded-full"
@@ -123,12 +157,12 @@ const AnalyticsSection = () => (
                   height: dot.size,
                   backgroundColor:
                     dot.type === "hot"
-                      ? "hsl(var(--warning))"
-                      : "hsl(var(--destructive))",
-                  boxShadow: `0 0 ${dot.size * 1.5}px ${
+                      ? "hsl(var(--primary))"
+                      : "hsl(var(--primary-glow))",
+                  boxShadow: `0 0 ${dot.size * 2}px ${
                     dot.type === "hot"
-                      ? "hsl(var(--warning) / 0.5)"
-                      : "hsl(var(--destructive) / 0.4)"
+                      ? "hsl(var(--primary) / 0.4)"
+                      : "hsl(var(--primary-glow) / 0.3)"
                   }`,
                 }}
               />
