@@ -50,8 +50,8 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
         >
           <Menu className="h-5 w-5" strokeWidth={1.5} />
         </button>
-        <Link to="/" className="text-lg font-semibold tracking-tight">
-          Sky<span className="text-primary">rise</span>
+        <Link to="/" className="flex items-center gap-2">
+          <img src={skyriseLogo} alt="Skyrise" className="h-7 w-auto" />
         </Link>
         <Link to="/app/profile" className="flex items-center justify-center h-9 w-9 rounded-full overflow-hidden">
           {profile?.avatar_url ? (
