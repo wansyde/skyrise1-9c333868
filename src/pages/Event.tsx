@@ -98,13 +98,13 @@ const Event = () => (
               >
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4 shrink-0" style={{ color: tier.accent }} strokeWidth={1.5} />
-                  <span className="text-xs font-semibold text-foreground">{tier.name}</span>
+                  <span className={`text-xs font-semibold ${tier.textColor}`}>{tier.name}</span>
                 </div>
-                <span className="text-center text-sm font-bold tabular-nums text-foreground">{tier.salary}</span>
-                <span className="text-center text-xs text-muted-foreground">{tier.tasks}</span>
+                <span className={`text-center text-sm font-bold tabular-nums ${tier.textColor}`}>{tier.salary}</span>
+                <span className={`text-center text-xs ${tier.subColor}`}>{tier.tasks}</span>
                 <div className="text-right">
-                  <span className="text-[10px] text-muted-foreground block leading-tight">Reset Deposit</span>
-                  <span className="text-xs font-semibold text-foreground">{tier.deposit}</span>
+                  <span className={`text-[10px] ${tier.subColor} block leading-tight`}>Reset Deposit</span>
+                  <span className={`text-xs font-semibold ${tier.textColor}`}>{tier.deposit}</span>
                 </div>
               </motion.div>
             );
