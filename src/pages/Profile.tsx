@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   User, CreditCard, MessageSquare, Bell, LogOut,
   ChevronRight, Shield, ArrowDownToLine, ArrowUpFromLine,
-  ArrowLeftRight, IdCard, UserCircle, Wallet
+  ArrowLeftRight, IdCard, UserCircle, Wallet, BadgeCheck
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -61,20 +61,26 @@ const Profile = () => {
       <div className="px-4 py-5">
         {/* Hero banner area */}
         <div className="relative mb-5 rounded-2xl overflow-hidden">
-          <img src={heroCarBanner} alt="Profile banner" className="h-32 w-full object-cover" width={1920} height={768} />
+          <div className="relative h-40 w-full overflow-hidden">
+            <img src={heroCarBanner} alt="Profile banner" className="absolute inset-0 h-full w-full object-cover object-center" width={1920} height={768} />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/40" />
+          </div>
 
           {/* Avatar + user info overlapping */}
           <div className="relative -mt-10 px-4 pb-4">
             <div className="flex items-end gap-3">
               {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="Avatar" className="h-16 w-16 rounded-full border-[3px] border-card object-cover shrink-0" />
+                <img src={profile.avatar_url} alt="Avatar" className="h-18 w-18 rounded-full border-[3px] border-card object-cover shrink-0 shadow-lg" style={{ width: 72, height: 72 }} />
               ) : (
-                <div className="h-16 w-16 rounded-full border-[3px] border-card bg-muted flex items-center justify-center shrink-0">
-                  <User className="h-7 w-7 text-muted-foreground" strokeWidth={1.5} />
+                <div className="rounded-full border-[3px] border-card bg-muted flex items-center justify-center shrink-0 shadow-lg" style={{ width: 72, height: 72 }}>
+                  <User className="h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
                 </div>
               )}
               <div className="pb-1">
-                <h1 className="text-base font-semibold leading-tight">{profile?.username || profile?.full_name || "User"}</h1>
+                <div className="flex items-center gap-1.5">
+                  <h1 className="text-base font-semibold leading-tight text-foreground">{profile?.username || profile?.full_name || "User"}</h1>
+                  <BadgeCheck className="h-4 w-4 text-primary fill-primary/15" strokeWidth={2} />
+                </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Invitation Code: {profile?.referral_code || "—"}
                 </p>
