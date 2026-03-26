@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   User, CreditCard, MessageSquare, Bell, LogOut,
   ChevronRight, Shield, ArrowDownToLine, ArrowUpFromLine,
-  ArrowLeftRight, IdCard, UserCircle, Wallet
+  ArrowLeftRight, IdCard, UserCircle, Wallet, BadgeCheck
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
