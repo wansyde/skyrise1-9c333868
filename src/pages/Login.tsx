@@ -237,8 +237,8 @@ const Login = () => {
         >
           {/* Logo on mobile */}
           <div className="mb-8 text-center lg:hidden">
-            <Link to="/" className="text-xl font-semibold tracking-tight">
-              Sky<span className="text-primary">rise</span>
+            <Link to="/">
+              <img src={skyriseLogo} alt="Skyrise" className="h-9 w-auto mx-auto" />
             </Link>
           </div>
 
