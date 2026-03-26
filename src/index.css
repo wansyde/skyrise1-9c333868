@@ -122,8 +122,8 @@
 
   /* Balance card - premium gradient */
   .balance-card {
-    background: linear-gradient(135deg, hsl(225 85% 50%) 0%, hsl(260 70% 50%) 100%);
-    box-shadow: 0 4px 20px rgba(66, 99, 235, 0.25);
+    background: linear-gradient(135deg, hsl(255 60% 58%) 0%, hsl(270 55% 62%) 100%);
+    box-shadow: 0 4px 20px rgba(124, 92, 230, 0.2);
     border-radius: var(--radius);
     color: white;
   }
