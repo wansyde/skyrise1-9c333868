@@ -8,6 +8,7 @@ import {
   Calendar, HelpCircle, Info, Shield
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import skyriseLogo from "@/assets/skyrise-logo.png";
 
 const bottomTabs = [
   { href: "/app", label: "Home", icon: Home },
@@ -49,8 +50,8 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
         >
           <Menu className="h-5 w-5" strokeWidth={1.5} />
         </button>
-        <Link to="/" className="text-lg font-semibold tracking-tight">
-          Sky<span className="text-primary">rise</span>
+        <Link to="/" className="flex items-center gap-2">
+          <img src={skyriseLogo} alt="Skyrise" className="h-7 w-auto" />
         </Link>
         <Link to="/app/profile" className="flex items-center justify-center h-9 w-9 rounded-full overflow-hidden">
           {profile?.avatar_url ? (
@@ -85,8 +86,8 @@ const AppLayout = ({ children }: { children: ReactNode }) => {
             >
               {/* Menu header */}
               <div className="flex h-14 items-center justify-between px-5">
-                <Link to="/" className="text-lg font-semibold tracking-tight" onClick={() => setMenuOpen(false)}>
-                  Sky<span className="text-primary">rise</span>
+                <Link to="/" className="flex items-center gap-2" onClick={() => setMenuOpen(false)}>
+                  <img src={skyriseLogo} alt="Skyrise" className="h-7 w-auto" />
                 </Link>
                 <button
                   onClick={() => setMenuOpen(false)}
