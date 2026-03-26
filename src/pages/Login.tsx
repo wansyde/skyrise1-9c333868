@@ -9,7 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Checkbox } from "@/components/ui/checkbox";
 import skyriseLogo from "@/assets/skyrise-logo.png";
-import { Checkbox } from "@/components/ui/checkbox";
 
 import heroCar1 from "@/assets/hero-car-1.jpg";
 import heroCar2 from "@/assets/hero-car-2.jpg";
