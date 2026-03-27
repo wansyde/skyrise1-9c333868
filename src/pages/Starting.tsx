@@ -2,9 +2,10 @@ import AppLayout from "@/components/layout/AppLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wallet, DollarSign, Play, ChevronRight, Clock, Headphones, ChevronLeft, X, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getVipTier } from "@/lib/vip-config";
 
 import audiA1Img from "@/assets/cars/audi-a1.jpg";
 import audiA2Img from "@/assets/cars/audi-a2.jpg";
