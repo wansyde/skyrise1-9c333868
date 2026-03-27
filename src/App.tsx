@@ -24,7 +24,7 @@ import Invest from "./pages/Invest";
 import Starting from "./pages/Starting";
 import Team from "./pages/Team";
 import Records from "./pages/Records";
-import WalletPage from "./pages/WalletPage";
+
 import Profile from "./pages/Profile";
 import AppDeposit from "./pages/AppDeposit";
 import AppWithdraw from "./pages/AppWithdraw";
