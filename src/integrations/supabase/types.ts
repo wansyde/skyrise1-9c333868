@@ -110,13 +110,16 @@ export type Database = {
           kyc_selfie_url: string | null
           kyc_status: string
           kyc_submitted_at: string | null
+          last_task_reset: string
           phone: string | null
           referral_code: string | null
           referred_by: string | null
           status: string
+          tasks_completed_today: number
           updated_at: string
           user_id: string
           username: string | null
+          vip_level: string
           withdraw_password: string | null
         }
         Insert: {
@@ -136,13 +139,16 @@ export type Database = {
           kyc_selfie_url?: string | null
           kyc_status?: string
           kyc_submitted_at?: string | null
+          last_task_reset?: string
           phone?: string | null
           referral_code?: string | null
           referred_by?: string | null
           status?: string
+          tasks_completed_today?: number
           updated_at?: string
           user_id: string
           username?: string | null
+          vip_level?: string
           withdraw_password?: string | null
         }
         Update: {
@@ -162,13 +168,16 @@ export type Database = {
           kyc_selfie_url?: string | null
           kyc_status?: string
           kyc_submitted_at?: string | null
+          last_task_reset?: string
           phone?: string | null
           referral_code?: string | null
           referred_by?: string | null
           status?: string
+          tasks_completed_today?: number
           updated_at?: string
           user_id?: string
           username?: string | null
+          vip_level?: string
           withdraw_password?: string | null
         }
         Relationships: []

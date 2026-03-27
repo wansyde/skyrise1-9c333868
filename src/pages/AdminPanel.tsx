@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Users, ArrowDownToLine, ArrowUpFromLine, DollarSign, Shield, Search, Pencil, Check, X } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { VIP_LEVELS } from "@/lib/vip-config";
 
 const AdminPanel = () => {
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -13,6 +14,8 @@ const AdminPanel = () => {
   const [editingUser, setEditingUser] = useState<string | null>(null);
   const [editBalance, setEditBalance] = useState("");
   const [editSalary, setEditSalary] = useState("");
+  const [editVipLevel, setEditVipLevel] = useState("");
+  const [editTasksCompleted, setEditTasksCompleted] = useState("");
   const queryClient = useQueryClient();
 
   const { data: profiles } = useQuery({
@@ -118,17 +121,22 @@ const AdminPanel = () => {
     setEditingUser(user.user_id);
     setEditBalance(String(user.balance));
     setEditSalary(String(user.advertising_salary ?? 0));
+    setEditVipLevel(user.vip_level || "Junior");
+    setEditTasksCompleted(String(user.tasks_completed_today ?? 0));
   };
 
   const cancelEditing = () => {
     setEditingUser(null);
     setEditBalance("");
     setEditSalary("");
+    setEditVipLevel("");
+    setEditTasksCompleted("");
   };
 
   const saveBalances = async (userId: string) => {
     const newBalance = parseFloat(editBalance);
     const newSalary = parseFloat(editSalary);
+    const newTasks = parseInt(editTasksCompleted);
     if (isNaN(newBalance) || newBalance < 0) {
       toast.error("Invalid wallet balance value.");
       return;
@@ -137,15 +145,28 @@ const AdminPanel = () => {
       toast.error("Invalid advertising salary value.");
       return;
     }
-    const { error } = await supabase
-      .from("profiles")
-      .update({ balance: newBalance, advertising_salary: newSalary })
-      .eq("user_id", userId);
-    if (error) {
-      toast.error("Failed to update balances.");
+    if (isNaN(newTasks) || newTasks < 0) {
+      toast.error("Invalid tasks completed value.");
       return;
     }
-    toast.success("User balances updated successfully.");
+    if (!VIP_LEVELS.includes(editVipLevel)) {
+      toast.error("Invalid VIP level.");
+      return;
+    }
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        balance: newBalance,
+        advertising_salary: newSalary,
+        vip_level: editVipLevel,
+        tasks_completed_today: newTasks,
+      })
+      .eq("user_id", userId);
+    if (error) {
+      toast.error("Failed to update user.");
+      return;
+    }
+    toast.success("User updated successfully.");
     setEditingUser(null);
     queryClient.invalidateQueries({ queryKey: ["admin-profiles"] });
   };
@@ -214,6 +235,8 @@ const AdminPanel = () => {
                 <th className="px-5 py-3 font-medium">Email</th>
                 <th className="px-5 py-3 font-medium">Wallet Balance</th>
                 <th className="px-5 py-3 font-medium">Ad Salary</th>
+                <th className="px-5 py-3 font-medium">VIP Level</th>
+                <th className="px-5 py-3 font-medium">Tasks Today</th>
                 <th className="px-5 py-3 font-medium">Action</th>
               </tr>
             </thead>
@@ -224,28 +247,38 @@ const AdminPanel = () => {
                   <td className="px-5 py-3 text-sm text-muted-foreground">{u.email || "—"}</td>
                   <td className="px-5 py-3">
                     {editingUser === u.user_id ? (
-                      <Input
-                        type="number"
-                        value={editBalance}
-                        onChange={(e) => setEditBalance(e.target.value)}
-                        className="h-7 w-28 text-xs"
-                        min={0}
-                      />
+                      <Input type="number" value={editBalance} onChange={(e) => setEditBalance(e.target.value)} className="h-7 w-28 text-xs" min={0} />
                     ) : (
                       <span className="text-sm tabular-nums">${Number(u.balance).toLocaleString()}</span>
                     )}
                   </td>
                   <td className="px-5 py-3">
                     {editingUser === u.user_id ? (
-                      <Input
-                        type="number"
-                        value={editSalary}
-                        onChange={(e) => setEditSalary(e.target.value)}
-                        className="h-7 w-28 text-xs"
-                        min={0}
-                      />
+                      <Input type="number" value={editSalary} onChange={(e) => setEditSalary(e.target.value)} className="h-7 w-28 text-xs" min={0} />
                     ) : (
                       <span className="text-sm tabular-nums">${Number(u.advertising_salary ?? 0).toLocaleString()}</span>
+                    )}
+                  </td>
+                  <td className="px-5 py-3">
+                    {editingUser === u.user_id ? (
+                      <select
+                        value={editVipLevel}
+                        onChange={(e) => setEditVipLevel(e.target.value)}
+                        className="h-7 rounded border border-border bg-background px-2 text-xs"
+                      >
+                        {VIP_LEVELS.map((level) => (
+                          <option key={level} value={level}>{level}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">{u.vip_level || "Junior"}</span>
+                    )}
+                  </td>
+                  <td className="px-5 py-3">
+                    {editingUser === u.user_id ? (
+                      <Input type="number" value={editTasksCompleted} onChange={(e) => setEditTasksCompleted(e.target.value)} className="h-7 w-20 text-xs" min={0} />
+                    ) : (
+                      <span className="text-sm tabular-nums">{u.tasks_completed_today ?? 0}</span>
                     )}
                   </td>
                   <td className="px-5 py-3">
@@ -267,7 +300,7 @@ const AdminPanel = () => {
                 </tr>
               ))}
               {filteredProfiles.length === 0 && (
-                <tr><td colSpan={5} className="px-5 py-6 text-center text-sm text-muted-foreground">No users found.</td></tr>
+                <tr><td colSpan={7} className="px-5 py-6 text-center text-sm text-muted-foreground">No users found.</td></tr>
               )}
             </tbody>
           </table>
@@ -298,11 +331,7 @@ const AdminPanel = () => {
                   <td className="px-5 py-3 text-xs text-muted-foreground">{d.method}</td>
                   <td className="px-5 py-3 text-xs text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</td>
                   <td className="px-5 py-3">
-                    <Button
-                      size="sm" variant="outline" className="btn-press text-xs h-7"
-                      disabled={processingId === d.id}
-                      onClick={() => handleApproveDeposit(d)}
-                    >
+                    <Button size="sm" variant="outline" className="btn-press text-xs h-7" disabled={processingId === d.id} onClick={() => handleApproveDeposit(d)}>
                       {processingId === d.id ? "..." : "Approve"}
                     </Button>
                   </td>
@@ -341,18 +370,10 @@ const AdminPanel = () => {
                   <td className="px-5 py-3 text-xs text-muted-foreground">{new Date(w.created_at).toLocaleDateString()}</td>
                   <td className="px-5 py-3">
                     <div className="flex gap-2">
-                      <Button
-                        size="sm" variant="outline" className="btn-press text-xs h-7"
-                        disabled={processingId === w.id}
-                        onClick={() => handleApproveWithdrawal(w)}
-                      >
+                      <Button size="sm" variant="outline" className="btn-press text-xs h-7" disabled={processingId === w.id} onClick={() => handleApproveWithdrawal(w)}>
                         {processingId === w.id ? "..." : "Approve"}
                       </Button>
-                      <Button
-                        size="sm" variant="outline"
-                        className="btn-press text-xs h-7 text-destructive border-destructive/30 hover:bg-destructive/10"
-                        onClick={() => handleRejectWithdrawal(w)}
-                      >
+                      <Button size="sm" variant="outline" className="btn-press text-xs h-7 text-destructive border-destructive/30 hover:bg-destructive/10" onClick={() => handleRejectWithdrawal(w)}>
                         Reject
                       </Button>
                     </div>

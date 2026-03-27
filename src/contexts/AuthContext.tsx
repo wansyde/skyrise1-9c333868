@@ -18,6 +18,9 @@ interface Profile {
   referral_code: string | null;
   referred_by: string | null;
   gender: string | null;
+  vip_level: string;
+  tasks_completed_today: number;
+  last_task_reset: string;
 }
 
 interface AuthContextType {

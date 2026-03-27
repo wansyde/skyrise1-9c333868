@@ -2,9 +2,10 @@ import AppLayout from "@/components/layout/AppLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wallet, DollarSign, Play, ChevronRight, Clock, Headphones, ChevronLeft, X, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getVipTier } from "@/lib/vip-config";
 
 import audiA1Img from "@/assets/cars/audi-a1.jpg";
 import audiA2Img from "@/assets/cars/audi-a2.jpg";
@@ -58,7 +59,7 @@ const generateAssignmentCode = () => {
 type MatchState = "idle" | "matching" | "matched";
 
 const Starting = () => {
-  const { profile, user } = useAuth();
+  const { profile, user, refreshProfile } = useAuth();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [matchState, setMatchState] = useState<MatchState>("idle");
@@ -69,23 +70,19 @@ const Starting = () => {
   const [completedCount, setCompletedCount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
+  const vipTier = useMemo(() => getVipTier(profile?.vip_level || "Junior"), [profile?.vip_level]);
+  const DAILY_LIMIT = vipTier.taskLimit;
+
   const todaySalary = 0;
   const userName = profile?.full_name || "User";
   const total = carCampaigns.length;
-  const DAILY_LIMIT = 40;
 
-  // Fetch today's completed count
+  // Use profile tasks_completed_today directly
   useEffect(() => {
-    if (!user) return;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    supabase
-      .from("task_records")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .gte("created_at", today.toISOString())
-      .then(({ count }) => setCompletedCount(count ?? 0));
-  }, [user, matchState]);
+    if (profile) {
+      setCompletedCount(profile.tasks_completed_today || 0);
+    }
+  }, [profile]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -197,20 +194,35 @@ const Starting = () => {
 
   // Promote (submit) handler
   const handlePromote = async () => {
-    if (!user || !matchedCar) return;
+    if (!user || !matchedCar || !profile) return;
     setSubmitting(true);
     try {
+      const earning = matchedCar.adSalary * vipTier.earningMultiplier;
+      
+      // Insert task record
       const { error } = await supabase.from("task_records").insert({
         user_id: user.id,
         car_brand: matchedCar.brand,
         car_name: matchedCar.name,
         car_image_url: matchedCar.featured,
         total_amount: matchedCar.totalAmount,
-        advertising_salary: matchedCar.adSalary,
+        advertising_salary: earning,
         assignment_code: assignmentCode,
         status: "completed",
       });
       if (error) throw error;
+
+      // Update profile balances and task count
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({
+          advertising_salary: Number(profile.advertising_salary) + earning,
+          tasks_completed_today: (profile.tasks_completed_today || 0) + 1,
+        })
+        .eq("user_id", user.id);
+      if (updateError) throw updateError;
+
+      await refreshProfile();
       toast.success("Assignment submitted successfully!");
       setMatchState("idle");
       setMatchedCar(null);
