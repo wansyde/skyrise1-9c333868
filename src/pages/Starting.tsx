@@ -77,18 +77,12 @@ const Starting = () => {
   const userName = profile?.full_name || "User";
   const total = carCampaigns.length;
 
-  // Fetch today's completed count
+  // Use profile tasks_completed_today directly
   useEffect(() => {
-    if (!user) return;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    supabase
-      .from("task_records")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .gte("created_at", today.toISOString())
-      .then(({ count }) => setCompletedCount(count ?? 0));
-  }, [user, matchState]);
+    if (profile) {
+      setCompletedCount(profile.tasks_completed_today || 0);
+    }
+  }, [profile]);
 
   useEffect(() => {
     if (isPaused) return;
