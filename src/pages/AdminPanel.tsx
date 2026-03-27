@@ -1,13 +1,18 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Users, ArrowDownToLine, ArrowUpFromLine, DollarSign, Shield } from "lucide-react";
+import { Users, ArrowDownToLine, ArrowUpFromLine, DollarSign, Shield, Search, Pencil, Check, X } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const AdminPanel = () => {
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [editingUser, setEditingUser] = useState<string | null>(null);
+  const [editBalance, setEditBalance] = useState("");
+  const [editSalary, setEditSalary] = useState("");
   const queryClient = useQueryClient();
 
   const { data: profiles } = useQuery({
@@ -23,7 +28,7 @@ const AdminPanel = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("deposits")
-        .select("*, profiles!deposits_user_id_fkey(full_name, email)")
+        .select("*, profiles!deposits_user_id_fkey(full_name, email, username)")
         .eq("status", "pending")
         .order("created_at", { ascending: false });
       return data || [];
@@ -35,7 +40,7 @@ const AdminPanel = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("withdrawals")
-        .select("*, profiles!withdrawals_user_id_fkey(full_name, email)")
+        .select("*, profiles!withdrawals_user_id_fkey(full_name, email, username)")
         .eq("status", "pending")
         .order("created_at", { ascending: false });
       return data || [];
@@ -44,9 +49,7 @@ const AdminPanel = () => {
 
   const handleApproveDeposit = async (deposit: any) => {
     setProcessingId(deposit.id);
-    // Update deposit status
     await supabase.from("deposits").update({ status: "approved" }).eq("id", deposit.id);
-    // Update user balance
     const { data: profile } = await supabase
       .from("profiles")
       .select("balance")
@@ -58,7 +61,6 @@ const AdminPanel = () => {
         .update({ balance: Number(profile.balance) + Number(deposit.amount) })
         .eq("user_id", deposit.user_id);
     }
-    // Update transaction status
     await supabase
       .from("transactions")
       .update({ status: "approved" })
@@ -66,7 +68,6 @@ const AdminPanel = () => {
       .eq("type", "deposit")
       .eq("status", "pending")
       .eq("amount", deposit.amount);
-
     toast.success(`Deposit $${Number(deposit.amount).toLocaleString()} approved.`);
     setProcessingId(null);
     queryClient.invalidateQueries({ queryKey: ["admin-pending-deposits"] });
@@ -80,7 +81,6 @@ const AdminPanel = () => {
       .select("balance")
       .eq("user_id", withdrawal.user_id)
       .single();
-
     if (profile && Number(profile.balance) >= Number(withdrawal.amount)) {
       await supabase.from("withdrawals").update({ status: "approved" }).eq("id", withdrawal.id);
       await supabase
@@ -114,8 +114,54 @@ const AdminPanel = () => {
     queryClient.invalidateQueries({ queryKey: ["admin-pending-withdrawals"] });
   };
 
+  const startEditing = (user: any) => {
+    setEditingUser(user.user_id);
+    setEditBalance(String(user.balance));
+    setEditSalary(String(user.advertising_salary ?? 0));
+  };
+
+  const cancelEditing = () => {
+    setEditingUser(null);
+    setEditBalance("");
+    setEditSalary("");
+  };
+
+  const saveBalances = async (userId: string) => {
+    const newBalance = parseFloat(editBalance);
+    const newSalary = parseFloat(editSalary);
+    if (isNaN(newBalance) || newBalance < 0) {
+      toast.error("Invalid wallet balance value.");
+      return;
+    }
+    if (isNaN(newSalary) || newSalary < 0) {
+      toast.error("Invalid advertising salary value.");
+      return;
+    }
+    const { error } = await supabase
+      .from("profiles")
+      .update({ balance: newBalance, advertising_salary: newSalary })
+      .eq("user_id", userId);
+    if (error) {
+      toast.error("Failed to update balances.");
+      return;
+    }
+    toast.success("User balances updated successfully.");
+    setEditingUser(null);
+    queryClient.invalidateQueries({ queryKey: ["admin-profiles"] });
+  };
+
   const totalUsers = profiles?.length ?? 0;
   const totalAUM = profiles?.reduce((s, p) => s + Number(p.balance), 0) ?? 0;
+
+  const filteredProfiles = (profiles || []).filter((p: any) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      (p.username || "").toLowerCase().includes(q) ||
+      (p.email || "").toLowerCase().includes(q) ||
+      (p.full_name || "").toLowerCase().includes(q)
+    );
+  });
 
   const stats = [
     { label: "Total Users", value: totalUsers.toLocaleString(), icon: Users },
@@ -146,6 +192,88 @@ const AdminPanel = () => {
         ))}
       </div>
 
+      {/* User Management */}
+      <div className="glass-card overflow-hidden mb-6">
+        <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h2 className="text-sm font-medium">User Management</h2>
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search by username or email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-8 text-xs"
+            />
+          </div>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-t border-border text-left text-xs text-muted-foreground">
+                <th className="px-5 py-3 font-medium">Username</th>
+                <th className="px-5 py-3 font-medium">Email</th>
+                <th className="px-5 py-3 font-medium">Wallet Balance</th>
+                <th className="px-5 py-3 font-medium">Ad Salary</th>
+                <th className="px-5 py-3 font-medium">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredProfiles.map((u: any) => (
+                <tr key={u.user_id} className="border-t border-border">
+                  <td className="px-5 py-3 text-sm font-medium">{u.username || "—"}</td>
+                  <td className="px-5 py-3 text-sm text-muted-foreground">{u.email || "—"}</td>
+                  <td className="px-5 py-3">
+                    {editingUser === u.user_id ? (
+                      <Input
+                        type="number"
+                        value={editBalance}
+                        onChange={(e) => setEditBalance(e.target.value)}
+                        className="h-7 w-28 text-xs"
+                        min={0}
+                      />
+                    ) : (
+                      <span className="text-sm tabular-nums">${Number(u.balance).toLocaleString()}</span>
+                    )}
+                  </td>
+                  <td className="px-5 py-3">
+                    {editingUser === u.user_id ? (
+                      <Input
+                        type="number"
+                        value={editSalary}
+                        onChange={(e) => setEditSalary(e.target.value)}
+                        className="h-7 w-28 text-xs"
+                        min={0}
+                      />
+                    ) : (
+                      <span className="text-sm tabular-nums">${Number(u.advertising_salary ?? 0).toLocaleString()}</span>
+                    )}
+                  </td>
+                  <td className="px-5 py-3">
+                    {editingUser === u.user_id ? (
+                      <div className="flex gap-1.5">
+                        <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={() => saveBalances(u.user_id)}>
+                          <Check className="h-3.5 w-3.5 text-success" />
+                        </Button>
+                        <Button size="sm" variant="outline" className="h-7 w-7 p-0" onClick={cancelEditing}>
+                          <X className="h-3.5 w-3.5 text-destructive" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button size="sm" variant="outline" className="h-7 text-xs gap-1.5" onClick={() => startEditing(u)}>
+                        <Pencil className="h-3 w-3" /> Edit
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {filteredProfiles.length === 0 && (
+                <tr><td colSpan={5} className="px-5 py-6 text-center text-sm text-muted-foreground">No users found.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* Pending Deposits */}
       <div className="glass-card overflow-hidden mb-6">
         <div className="p-5">
@@ -165,15 +293,13 @@ const AdminPanel = () => {
             <tbody>
               {(pendingDeposits || []).map((d: any) => (
                 <tr key={d.id} className="border-t border-border">
-                  <td className="px-5 py-3 text-sm">{d.profiles?.email || "—"}</td>
+                  <td className="px-5 py-3 text-sm">{d.profiles?.username || d.profiles?.email || "—"}</td>
                   <td className="px-5 py-3 text-sm tabular-nums">${Number(d.amount).toLocaleString()}</td>
                   <td className="px-5 py-3 text-xs text-muted-foreground">{d.method}</td>
                   <td className="px-5 py-3 text-xs text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</td>
                   <td className="px-5 py-3">
                     <Button
-                      size="sm"
-                      variant="outline"
-                      className="btn-press text-xs h-7"
+                      size="sm" variant="outline" className="btn-press text-xs h-7"
                       disabled={processingId === d.id}
                       onClick={() => handleApproveDeposit(d)}
                     >
@@ -209,24 +335,21 @@ const AdminPanel = () => {
             <tbody>
               {(pendingWithdrawals || []).map((w: any) => (
                 <tr key={w.id} className="border-t border-border">
-                  <td className="px-5 py-3 text-sm">{w.profiles?.email || "—"}</td>
+                  <td className="px-5 py-3 text-sm">{w.profiles?.username || w.profiles?.email || "—"}</td>
                   <td className="px-5 py-3 text-sm tabular-nums">${Number(w.amount).toLocaleString()}</td>
                   <td className="px-5 py-3 text-xs text-muted-foreground">{w.method}</td>
                   <td className="px-5 py-3 text-xs text-muted-foreground">{new Date(w.created_at).toLocaleDateString()}</td>
                   <td className="px-5 py-3">
                     <div className="flex gap-2">
                       <Button
-                        size="sm"
-                        variant="outline"
-                        className="btn-press text-xs h-7"
+                        size="sm" variant="outline" className="btn-press text-xs h-7"
                         disabled={processingId === w.id}
                         onClick={() => handleApproveWithdrawal(w)}
                       >
                         {processingId === w.id ? "..." : "Approve"}
                       </Button>
                       <Button
-                        size="sm"
-                        variant="outline"
+                        size="sm" variant="outline"
                         className="btn-press text-xs h-7 text-destructive border-destructive/30 hover:bg-destructive/10"
                         onClick={() => handleRejectWithdrawal(w)}
                       >
