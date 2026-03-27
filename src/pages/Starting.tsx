@@ -200,20 +200,35 @@ const Starting = () => {
 
   // Promote (submit) handler
   const handlePromote = async () => {
-    if (!user || !matchedCar) return;
+    if (!user || !matchedCar || !profile) return;
     setSubmitting(true);
     try {
+      const earning = matchedCar.adSalary * vipTier.earningMultiplier;
+      
+      // Insert task record
       const { error } = await supabase.from("task_records").insert({
         user_id: user.id,
         car_brand: matchedCar.brand,
         car_name: matchedCar.name,
         car_image_url: matchedCar.featured,
         total_amount: matchedCar.totalAmount,
-        advertising_salary: matchedCar.adSalary,
+        advertising_salary: earning,
         assignment_code: assignmentCode,
         status: "completed",
       });
       if (error) throw error;
+
+      // Update profile balances and task count
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({
+          advertising_salary: Number(profile.advertising_salary) + earning,
+          tasks_completed_today: (profile.tasks_completed_today || 0) + 1,
+        })
+        .eq("user_id", user.id);
+      if (updateError) throw updateError;
+
+      await refreshProfile();
       toast.success("Assignment submitted successfully!");
       setMatchState("idle");
       setMatchedCar(null);
