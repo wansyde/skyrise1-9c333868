@@ -94,6 +94,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          advertising_salary: number
           avatar_url: string | null
           balance: number
           created_at: string
@@ -119,6 +120,7 @@ export type Database = {
           withdraw_password: string | null
         }
         Insert: {
+          advertising_salary?: number
           avatar_url?: string | null
           balance?: number
           created_at?: string
@@ -144,6 +146,7 @@ export type Database = {
           withdraw_password?: string | null
         }
         Update: {
+          advertising_salary?: number
           avatar_url?: string | null
           balance?: number
           created_at?: string

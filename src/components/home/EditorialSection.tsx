@@ -61,12 +61,12 @@ const EditorialSection = () => (
             />
           </motion.div>
 
-          {/* Gradient overlay */}
+          {/* Subtle gradient overlay */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "linear-gradient(180deg, transparent 40%, hsl(var(--background) / 0.85) 100%)",
+                "linear-gradient(180deg, transparent 55%, hsl(var(--background) / 0.5) 100%)",
             }}
           />
 

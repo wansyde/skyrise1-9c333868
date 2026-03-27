@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS advertising_salary numeric NOT NULL DEFAULT 0;
