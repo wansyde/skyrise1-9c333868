@@ -14,7 +14,6 @@ const bottomTabs = [
   { href: "/app", label: "Home", icon: Home },
   { href: "/app/starting", label: "Starting", icon: Car },
   { href: "/app/records", label: "Records", icon: ClipboardList },
-  { href: "/app/wallet", label: "Wallet", icon: Wallet },
   { href: "/app/profile", label: "Profile", icon: User },
 ];
 
