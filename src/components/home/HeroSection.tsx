@@ -20,11 +20,12 @@ const HeroSection = () => (
         height={1080}
       />
 
+      {/* Minimal bottom fade only */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "linear-gradient(180deg, transparent 0%, transparent 60%, hsl(var(--background) / 0.6) 80%, hsl(var(--background)) 100%)",
+            "linear-gradient(180deg, transparent 0%, transparent 85%, hsl(var(--background) / 0.3) 95%, hsl(var(--background) / 0.6) 100%)",
         }}
       />
 
