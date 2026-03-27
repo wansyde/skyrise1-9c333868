@@ -106,6 +106,21 @@ const Login = () => {
           ? "Invalid credentials. Please check your User ID and password."
           : error.message);
       } else {
+        // Check if user has admin role
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: adminRole } = await supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", user.id)
+            .eq("role", "admin")
+            .maybeSingle();
+          if (adminRole) {
+            toast.success("Welcome back, Admin!");
+            navigate("/admin");
+            return;
+          }
+        }
         toast.success("Welcome back!");
         navigate("/app");
       }
