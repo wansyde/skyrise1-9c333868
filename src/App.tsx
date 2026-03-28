@@ -18,7 +18,7 @@ import Register from "./pages/Register";
 
 // App pages (mobile-first dashboard)
 import Home from "./pages/Home";
-import Invest from "./pages/Invest";
+
 import Starting from "./pages/Starting";
 import Team from "./pages/Team";
 import Records from "./pages/Records";
@@ -59,7 +59,7 @@ const App = () => (
 
             {/* App (authenticated) */}
             <Route path="/app" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-            <Route path="/app/invest" element={<ProtectedRoute><Invest /></ProtectedRoute>} />
+            
             <Route path="/app/starting" element={<ProtectedRoute><Starting /></ProtectedRoute>} />
             <Route path="/app/team" element={<ProtectedRoute><Team /></ProtectedRoute>} />
             <Route path="/app/records" element={<ProtectedRoute><Records /></ProtectedRoute>} />
