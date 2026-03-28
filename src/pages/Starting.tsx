@@ -2,7 +2,7 @@ import AppLayout from "@/components/layout/AppLayout";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wallet, DollarSign, Play, ChevronRight, Clock, Headphones, ChevronLeft, X, Loader2, Check } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { getVipTier, getSetProgress } from "@/lib/vip-config";
@@ -73,9 +73,7 @@ const carCampaigns = [
 ];
 
 const VISIBLE_COUNT = 7;
-const CARD_WIDTH = 155; // px
-const CARD_GAP = 12; // px
-const CARD_STEP = CARD_WIDTH + CARD_GAP;
+const CARD_GAP = 10; // px
 
 const generateAssignmentCode = () => {
   const now = new Date();
@@ -102,6 +100,20 @@ const Starting = () => {
   const [matchedAt, setMatchedAt] = useState<Date | null>(null);
   const [completedCount, setCompletedCount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    const measure = () => {
+      if (carouselRef.current) setContainerWidth(carouselRef.current.offsetWidth);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const cardWidth = containerWidth > 0 ? (containerWidth - (VISIBLE_COUNT - 1) * CARD_GAP) / VISIBLE_COUNT : 155;
+  const cardStep = cardWidth + CARD_GAP;
 
   const vipTier = useMemo(() => getVipTier(profile?.vip_level || "Junior"), [profile?.vip_level]);
   const DAILY_LIMIT = vipTier.totalTasks;
@@ -358,31 +370,34 @@ const Starting = () => {
             </div>
 
             <div
-              className="relative h-[210px] sm:h-[230px] overflow-hidden rounded-2xl"
+              ref={carouselRef}
+              className="relative overflow-hidden rounded-2xl"
+              style={{ height: cardWidth * 1.25 + 20, background: "radial-gradient(ellipse at center bottom, hsl(var(--primary) / 0.04) 0%, transparent 60%)" }}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
-              style={{ background: "radial-gradient(ellipse at center bottom, hsl(var(--primary) / 0.04) 0%, transparent 60%)" }}
             >
-
-              {visibleCards.map(({ idx, offset, car }) => (
-                <motion.div
-                  key={idx}
-                  className="absolute top-1/2 cursor-pointer"
-                  onClick={() => goTo(idx)}
-                  animate={{
-                    x: `calc(50% + ${offset * CARD_STEP}px - ${CARD_WIDTH / 2}px)`,
-                    y: "-50%",
-                  }}
-                  transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-                >
-                  <div
-                    className="rounded-xl overflow-hidden"
-                    style={{ width: CARD_WIDTH, height: CARD_WIDTH * 1.25, boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}
+              {visibleCards.map(({ idx, offset, car }) => {
+                // offset ranges from -half to +half; position 0 = leftmost card
+                const posIndex = offset + half; // 0 to VISIBLE_COUNT-1
+                const xPos = posIndex * cardStep;
+                return (
+                  <motion.div
+                    key={idx}
+                    className="absolute cursor-pointer"
+                    style={{ top: 10 }}
+                    onClick={() => goTo(idx)}
+                    animate={{ x: xPos }}
+                    transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
                   >
-                    <img src={car.image} alt={car.brand} loading="lazy" className="w-full h-full object-cover" />
-                  </div>
-                </motion.div>
-              ))}
+                    <div
+                      className="rounded-xl overflow-hidden"
+                      style={{ width: cardWidth, height: cardWidth * 1.25, boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}
+                    >
+                      <img src={car.image} alt={car.brand} loading="lazy" className="w-full h-full object-cover" />
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
 
             <div className="flex justify-center gap-1 mt-3">
