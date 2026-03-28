@@ -12,6 +12,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const AppWithdraw = () => {
   const [tab, setTab] = useState<"withdraw" | "history">("withdraw");
+  const [step, setStep] = useState<1 | 2>(1);
   const [amount, setAmount] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [password, setPassword] = useState("");
@@ -39,31 +40,35 @@ const AppWithdraw = () => {
     setAmount(balance.toFixed(2));
   };
 
-  const handleSubmit = async () => {
+  const handleProceedToAddress = () => {
     if (!user) return;
     const num = Number(amount);
     if (num <= 0 || num > balance) {
       toast.error("Invalid amount. Cannot exceed your balance.");
       return;
     }
-    if (!walletAddress.trim()) {
-      toast.error("Please enter your crypto wallet address.");
-      return;
-    }
     if (!password) {
       toast.error("Please enter your transaction password.");
       return;
     }
-
     if (profile?.withdraw_password && password !== profile.withdraw_password) {
       toast.error("Incorrect transaction password.");
+      return;
+    }
+    setStep(2);
+  };
+
+  const handleSubmit = async () => {
+    if (!user) return;
+    if (!walletAddress.trim()) {
+      toast.error("Please enter your crypto wallet address.");
       return;
     }
 
     setLoading(true);
     try {
       const { data, error } = await supabase.rpc("submit_withdrawal", {
-        _amount: num,
+        _amount: Number(amount),
         _wallet_address: walletAddress.trim(),
       } as any);
       if (error) throw error;
@@ -76,6 +81,7 @@ const AppWithdraw = () => {
       setAmount("");
       setWalletAddress("");
       setPassword("");
+      setStep(1);
       queryClient.invalidateQueries({ queryKey: ["withdrawal-history"] });
     } catch (e: any) {
       toast.error(e.message || "Failed to submit withdrawal.");
@@ -125,81 +131,111 @@ const AppWithdraw = () => {
                 transition={{ duration: 0.2 }}
                 className="flex flex-col gap-5"
               >
-                {/* Balance card */}
-                <div className="balance-card p-5 rounded-2xl">
-                  <span className="text-sm text-white/60">Account Amount</span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-semibold tabular-nums">
-                      {balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
-                    </span>
-                    <span className="text-sm text-white/50 font-medium">AC</span>
-                  </div>
-                  <p className="text-xs text-white/40 mt-2">You will receive your withdrawal within an hour</p>
-                </div>
+                <AnimatePresence mode="wait">
+                  {step === 1 ? (
+                    <motion.div key="step1" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.2 }} className="flex flex-col gap-5">
+                      {/* Balance card */}
+                      <div className="balance-card p-5 rounded-2xl">
+                        <span className="text-sm text-white/60">Account Amount</span>
+                        <div className="flex items-baseline gap-2 mt-1">
+                          <span className="text-3xl font-semibold tabular-nums">
+                            {balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                          </span>
+                          <span className="text-sm text-white/50 font-medium">AC</span>
+                        </div>
+                        <p className="text-xs text-white/40 mt-2">You will receive your withdrawal within an hour</p>
+                      </div>
 
-                {/* Withdraw Amount */}
-                <div>
-                  <label className="text-sm text-muted-foreground block mb-2">Withdraw Amount</label>
-                  <div className="relative">
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm tabular-nums pr-16 focus-visible:border-muted-foreground/40"
-                      min={0}
-                      max={balance}
-                    />
-                    <button
-                      type="button"
-                      onClick={handleFillAll}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground text-xs font-medium px-4 py-1.5 rounded-md hover:bg-primary/90 transition-colors"
-                    >
-                      ALL
-                    </button>
-                  </div>
-                </div>
+                      {/* Withdraw Amount */}
+                      <div>
+                        <label className="text-sm text-muted-foreground block mb-2">Withdraw Amount</label>
+                        <div className="relative">
+                          <Input
+                            type="number"
+                            placeholder="0.00"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                            className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm tabular-nums pr-16 focus-visible:border-muted-foreground/40"
+                            min={0}
+                            max={balance}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleFillAll}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 bg-primary text-primary-foreground text-xs font-medium px-4 py-1.5 rounded-md hover:bg-primary/90 transition-colors"
+                          >
+                            ALL
+                          </button>
+                        </div>
+                      </div>
 
-                <div>
-                  <label className="text-sm text-muted-foreground block mb-2">Transaction Password</label>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="Enter password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm pr-12 focus-visible:border-muted-foreground/40"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" strokeWidth={1.5} /> : <Eye className="h-4 w-4" strokeWidth={1.5} />}
-                    </button>
-                  </div>
-                </div>
+                      {/* Transaction Password */}
+                      <div>
+                        <label className="text-sm text-muted-foreground block mb-2">Transaction Password</label>
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm pr-12 focus-visible:border-muted-foreground/40"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" strokeWidth={1.5} /> : <Eye className="h-4 w-4" strokeWidth={1.5} />}
+                          </button>
+                        </div>
+                      </div>
 
-                {/* Wallet Address - after password */}
-                <div>
-                  <label className="text-sm text-muted-foreground block mb-2">Crypto Wallet Address</label>
-                  <Input
-                    type="text"
-                    placeholder="Enter your USDT (TRC-20) wallet address"
-                    value={walletAddress}
-                    onChange={(e) => setWalletAddress(e.target.value)}
-                    className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm font-mono focus-visible:border-muted-foreground/40"
-                  />
-                </div>
+                      <Button
+                        className="btn-press h-12 w-full text-sm mt-2"
+                        disabled={!amount || !password}
+                        onClick={handleProceedToAddress}
+                      >
+                        Continue
+                      </Button>
+                    </motion.div>
+                  ) : (
+                    <motion.div key="step2" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }} className="flex flex-col gap-5">
+                      {/* Summary */}
+                      <div className="balance-card p-5 rounded-2xl">
+                        <span className="text-sm text-white/60">Withdrawal Amount</span>
+                        <div className="text-3xl font-semibold tabular-nums mt-1">
+                          ${Number(amount).toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                        </div>
+                      </div>
 
-                {/* Submit */}
-                <Button
-                  className="btn-press h-12 w-full text-sm mt-2"
-                  disabled={loading || !amount || !walletAddress.trim() || !password}
-                  onClick={handleSubmit}
-                >
-                  {loading ? "Processing..." : "Withdraw"}
-                </Button>
+                      {/* Wallet Address */}
+                      <div>
+                        <label className="text-sm text-muted-foreground block mb-2">Crypto Wallet Address</label>
+                        <Input
+                          type="text"
+                          placeholder="Enter your USDT (TRC-20) wallet address"
+                          value={walletAddress}
+                          onChange={(e) => setWalletAddress(e.target.value)}
+                          className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm font-mono focus-visible:border-muted-foreground/40"
+                          autoFocus
+                        />
+                      </div>
+
+                      <div className="flex gap-3 mt-2">
+                        <Button variant="outline" className="btn-press h-12 flex-1 text-sm" onClick={() => setStep(1)}>
+                          Back
+                        </Button>
+                        <Button
+                          className="btn-press h-12 flex-[2] text-sm"
+                          disabled={loading || !walletAddress.trim()}
+                          onClick={handleSubmit}
+                        >
+                          {loading ? "Processing..." : "Submit Withdrawal"}
+                        </Button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             ) : (
               <motion.div
