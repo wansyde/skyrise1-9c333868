@@ -523,6 +523,7 @@ const AdminPanel = () => {
                     <SortHeader field="advertising_salary">Ad Salary</SortHeader>
                     <th className="px-5 py-3 font-medium">VIP Level</th>
                     <th className="px-5 py-3 font-medium">Tasks Today</th>
+                    <th className="px-5 py-3 font-medium">Credit Score</th>
                     <SortHeader field="status">Task Access</SortHeader>
                     <th className="px-5 py-3 font-medium">Cycle</th>
                     <SortHeader field="created_at">Registered</SortHeader>
