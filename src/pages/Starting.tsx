@@ -147,13 +147,10 @@ const Starting = () => {
     const rotateY = offset * -10;
     const translateX = offset * 120;
     const translateZ = -absOffset * 20;
-    const opacity = Math.max(0.65, 1 - absOffset * 0.08);
     const zIndex = 10 - absOffset;
-    const brightness = Math.max(0.8, 1 - absOffset * 0.05);
     return {
       transform: `perspective(1200px) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
-      opacity, zIndex,
-      filter: `brightness(${brightness}) contrast(1.05) saturate(1.1)`,
+      opacity: 1, zIndex,
     };
   };
 
