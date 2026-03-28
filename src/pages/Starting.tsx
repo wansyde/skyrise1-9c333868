@@ -147,13 +147,10 @@ const Starting = () => {
     const rotateY = offset * -10;
     const translateX = offset * 120;
     const translateZ = -absOffset * 20;
-    const opacity = Math.max(0.65, 1 - absOffset * 0.08);
     const zIndex = 10 - absOffset;
-    const brightness = Math.max(0.8, 1 - absOffset * 0.05);
     return {
       transform: `perspective(1200px) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
-      opacity, zIndex,
-      filter: `brightness(${brightness}) contrast(1.05) saturate(1.1)`,
+      opacity: 1, zIndex,
     };
   };
 
@@ -389,7 +386,7 @@ const Starting = () => {
                     key={`${idx}-${car.brand}`}
                     className="absolute cursor-pointer"
                     onClick={() => goTo(idx)}
-                    animate={{ transform: style.transform, opacity: style.opacity, zIndex: style.zIndex, filter: style.filter }}
+                    animate={{ transform: style.transform, opacity: style.opacity, zIndex: style.zIndex }}
                     transition={{ type: "spring", stiffness: 250, damping: 30, mass: 0.8 }}
                     style={{ zIndex: style.zIndex }}
                   >
@@ -431,7 +428,7 @@ const Starting = () => {
                     initial={{ opacity: 0, x: "25%", scale: 0.95 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
                     exit={{ opacity: 0, x: "-20%", scale: 0.97 }}
-                    transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                    transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
                   >
                     <img
                       src={featuredCar.featured}
