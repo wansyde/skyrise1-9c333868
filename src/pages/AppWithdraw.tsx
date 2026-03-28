@@ -220,35 +220,9 @@ const AppWithdraw = () => {
                         </div>
                       </div>
 
-                      {/* First-time user: Wallet fields */}
-                      {!hasSavedWallet && (
-                        <>
-                          <div>
-                            <label className="text-sm text-muted-foreground block mb-2">Wallet Name</label>
-                            <Input
-                              type="text"
-                              placeholder="e.g. My TRC-20 Wallet"
-                              value={walletName}
-                              onChange={(e) => setWalletName(e.target.value)}
-                              className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm focus-visible:border-muted-foreground/40"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm text-muted-foreground block mb-2">Wallet Address</label>
-                            <Input
-                              type="text"
-                              placeholder="Enter your USDT (TRC-20) wallet address"
-                              value={walletAddress}
-                              onChange={(e) => setWalletAddress(e.target.value)}
-                              className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm font-mono focus-visible:border-muted-foreground/40"
-                            />
-                          </div>
-                        </>
-                      )}
-
                       <Button
                         className="btn-press h-12 w-full text-sm mt-2"
-                        disabled={!amount || !password || (!hasSavedWallet && (!walletName || !walletAddress))}
+                        disabled={!amount || !password}
                         onClick={handleProceedToStep2}
                       >
                         Continue
