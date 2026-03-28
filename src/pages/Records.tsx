@@ -4,7 +4,41 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { Car } from "lucide-react";
+
+const FALLBACK_CAR = "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=400&fit=crop&q=80";
+
+const CarImage = ({ src, alt }: { src: string | null; alt: string }) => {
+  const [imgSrc, setImgSrc] = useState(src || FALLBACK_CAR);
+  const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
+
+  const handleError = useCallback(() => {
+    if (!errored) {
+      setErrored(true);
+      setImgSrc(FALLBACK_CAR);
+    }
+  }, [errored]);
+
+  return (
+    <div className="w-20 h-20 flex-shrink-0 rounded-xl bg-muted/30 flex items-center justify-center overflow-hidden relative">
+      {!loaded && !errored && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <Car className="h-6 w-6 text-muted-foreground/30" strokeWidth={1.5} />
+        </div>
+      )}
+      <img
+        src={imgSrc}
+        alt={alt}
+        loading="lazy"
+        onLoad={() => setLoaded(true)}
+        onError={handleError}
+        className={`w-full h-full object-cover transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
+      />
+    </div>
+  );
+};
 
 type TabKey = "all" | "pending" | "completed";
 
@@ -98,18 +132,7 @@ const Records = () => {
               {/* Card */}
               <div className="bg-card rounded-2xl border border-border/50 p-4 shadow-sm">
                 <div className="flex gap-4">
-                  {/* Car Image */}
-                  <div className="w-20 h-20 flex-shrink-0 rounded-xl bg-muted/30 flex items-center justify-center overflow-hidden">
-                    {record.car_image_url ? (
-                      <img
-                        src={record.car_image_url}
-                        alt={record.car_name}
-                        className="w-full h-full object-contain"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 bg-muted rounded-lg" />
-                    )}
-                  </div>
+                  <CarImage src={record.car_image_url} alt={record.car_name} />
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
