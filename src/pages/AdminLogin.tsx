@@ -57,7 +57,7 @@ const AdminLogin = () => {
         return;
       }
 
-      navigate("/admin-sky-987");
+      navigate("/admin-sky-987/dashboard");
     } catch {
       toast.error("Login failed.");
     } finally {
