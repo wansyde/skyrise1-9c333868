@@ -63,6 +63,11 @@ const Profile = () => {
           >
             <item.icon className="h-[18px] w-[18px] text-muted-foreground" strokeWidth={1.5} />
             <span className="flex-1 text-sm">{item.label}</span>
+            {item.label === "Notifications" && pendingCount && pendingCount > 0 ? (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground px-1.5">
+                {pendingCount}
+              </span>
+            ) : null}
             <ChevronRight className="h-4 w-4 text-muted-foreground/50" strokeWidth={1.5} />
           </Link>
         ))}
