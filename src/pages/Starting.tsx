@@ -446,35 +446,49 @@ const Starting = () => {
               className="relative rounded-2xl overflow-hidden"
               onTouchStart={handleFeaturedTouchStart}
               onTouchEnd={handleFeaturedTouchEnd}
-              style={{ background: "radial-gradient(ellipse at 50% 40%, hsl(var(--primary) / 0.06) 0%, hsl(var(--card) / 0.4) 50%, hsl(var(--background)) 100%)" }}
+              style={{ background: "radial-gradient(ellipse at 50% 60%, hsl(var(--muted) / 0.5) 0%, hsl(var(--background)) 80%)" }}
             >
-              <div className="relative" style={{ perspective: "1200px" }}>
+              <div className="relative flex items-center justify-center py-4 md:py-8" style={{ perspective: "1400px" }}>
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={featuredCar.brand}
-                    className="relative"
-                    initial={{ opacity: 0, scale: 1.06, x: 40 }}
-                    animate={{ opacity: 1, scale: 1, x: 0 }}
-                    exit={{ opacity: 0, scale: 0.96, x: -40 }}
-                    transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    key={`showcase-${activeIndex}`}
+                    className="relative w-full flex items-center justify-center"
+                    initial={{ opacity: 0, scale: 1.08, x: 60, rotateY: -8 }}
+                    animate={{ opacity: 1, scale: 1, x: 0, rotateY: 0 }}
+                    exit={{ opacity: 0, scale: 0.94, x: -60, rotateY: 8 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <img src={featuredCar.featured} alt={featuredCar.brand} className="w-full aspect-[2/1] object-contain rounded-2xl" style={{ filter: "brightness(1.08) contrast(1.06) saturate(1.12)" }} />
-                    <div className="absolute -bottom-3 left-[10%] right-[10%] h-8 rounded-full" style={{ background: "radial-gradient(ellipse, rgba(0,0,0,0.35) 0%, transparent 70%)", filter: "blur(8px)" }} />
+                    <img
+                      src={featuredCar.featured}
+                      alt={featuredCar.name}
+                      className="w-[85%] md:w-[65%] lg:w-[55%] aspect-[2/1] object-contain drop-shadow-2xl"
+                      style={{ filter: "brightness(1.06) contrast(1.04) saturate(1.1)" }}
+                    />
+                    {/* Ground shadow ellipse */}
+                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[70%] md:w-[50%] h-6 md:h-8 rounded-[50%]" style={{ background: "radial-gradient(ellipse, rgba(0,0,0,0.18) 0%, transparent 70%)", filter: "blur(6px)" }} />
                   </motion.div>
                 </AnimatePresence>
-                <div className="absolute bottom-0 left-0 right-0 h-24 rounded-b-2xl overflow-hidden opacity-20 pointer-events-none" style={{ background: "linear-gradient(to top, hsl(var(--primary) / 0.08), transparent)" }} />
               </div>
-              <button onClick={goFeaturedPrev} className="absolute left-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/60 backdrop-blur-sm border border-border/50 flex items-center justify-center hover:bg-background/80">
+
+              {/* Turntable platform ring */}
+              <div className="hidden md:block absolute bottom-4 left-1/2 -translate-x-1/2 w-[60%] pointer-events-none">
+                <svg viewBox="0 0 400 60" className="w-full" style={{ opacity: 0.25 }}>
+                  <ellipse cx="200" cy="30" rx="190" ry="25" fill="none" stroke="hsl(var(--foreground))" strokeWidth="0.8" strokeDasharray="4 3" />
+                  <ellipse cx="200" cy="30" rx="160" ry="18" fill="none" stroke="hsl(var(--foreground))" strokeWidth="0.4" />
+                </svg>
+              </div>
+
+              <button onClick={goFeaturedPrev} className="absolute left-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/60 backdrop-blur-sm border border-border/50 flex items-center justify-center hover:bg-background/80 transition-colors">
                 <ChevronLeft className="h-4 w-4 text-foreground/70" />
               </button>
-              <button onClick={goFeaturedNext} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/60 backdrop-blur-sm border border-border/50 flex items-center justify-center hover:bg-background/80">
+              <button onClick={goFeaturedNext} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/60 backdrop-blur-sm border border-border/50 flex items-center justify-center hover:bg-background/80 transition-colors">
                 <ChevronRight className="h-4 w-4 text-foreground/70" />
               </button>
             </div>
 
             <AnimatePresence mode="wait">
-              <motion.p key={featuredCar.brand} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.4 }} className="text-center text-xs font-medium text-muted-foreground mt-3 tracking-widest uppercase">
-                {featuredCar.brand}
+              <motion.p key={`name-${activeIndex}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="text-center text-xs font-medium text-muted-foreground mt-3 tracking-widest uppercase">
+                {featuredCar.name}
               </motion.p>
             </AnimatePresence>
 
