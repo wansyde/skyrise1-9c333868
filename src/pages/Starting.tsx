@@ -115,10 +115,11 @@ const Starting = () => {
     }
   }, [profile]);
 
+  // Auto-scroll: decrement so cards move right-to-left (new cards enter from right, exit left)
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % total);
+      setActiveIndex((prev) => (prev - 1 + total) % total);
     }, 3000);
     return () => clearInterval(interval);
   }, [isPaused, total]);
@@ -164,8 +165,8 @@ const Starting = () => {
     visibleCards.push({ idx, offset, car: carCampaigns[idx] });
   }
 
-  // Showcase = the rightmost visible card (last one about to exit right)
-  const showcaseIndex = ((activeIndex + half) % total + total) % total;
+  // Showcase = the leftmost visible card (the one about to exit through the left)
+  const showcaseIndex = ((activeIndex - half) % total + total) % total;
   const featuredCar = carCampaigns[showcaseIndex];
 
   // Preload adjacent featured images for smooth transitions
