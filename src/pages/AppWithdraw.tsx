@@ -108,8 +108,7 @@ const AppWithdraw = () => {
       });
 
       setAmount("");
-      setWalletAddress("");
-      setWalletName("");
+      setPassword("");
       setPassword("");
       setStep(1);
       queryClient.invalidateQueries({ queryKey: ["withdrawal-history"] });
