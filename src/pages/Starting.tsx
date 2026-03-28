@@ -251,8 +251,8 @@ const Starting = () => {
       const reward = taskCost * 0.004;
 
       // STEP 4: Return funds + profit
-      const newBalance = currentBalance - taskCost + taskCost + reward; // original - cost + cost + reward = original + reward
-      const newAdSalary = Number(profile.advertising_salary) + reward;
+      const newBalance = parseFloat((currentBalance - taskCost + taskCost + reward).toFixed(2)); // original - cost + cost + reward = original + reward
+      const newAdSalary = parseFloat((Number(profile.advertising_salary) + reward).toFixed(2));
       const newTaskCount = (profile.tasks_completed_today || 0) + 1;
 
       const { error: returnError } = await supabase
