@@ -73,6 +73,9 @@ const carCampaigns = [
 ];
 
 const VISIBLE_COUNT = 7;
+const CARD_WIDTH = 155; // px
+const CARD_GAP = 12; // px
+const CARD_STEP = CARD_WIDTH + CARD_GAP;
 
 const generateAssignmentCode = () => {
   const now = new Date();
