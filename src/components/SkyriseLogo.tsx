@@ -1,17 +1,30 @@
 const SkyriseLogo = ({ className = "h-8 w-auto" }: { className?: string }) => (
-  <div className={`flex items-center gap-2 ${className}`}>
-    {/* S symbol */}
-    <svg viewBox="0 0 36 36" className="h-full w-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <div className={`flex items-center gap-2.5 ${className}`}>
+    {/* Icon mark — overlapping circles with cutout */}
+    <svg viewBox="0 0 48 48" className="h-full w-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Top arc */}
       <path
-        d="M18 3C9.716 3 3 9.716 3 18s6.716 15 15 15c4.97 0 9.374-2.42 12.11-6.15a1.5 1.5 0 0 0-2.47-1.7A12 12 0 1 1 30 18a1.5 1.5 0 0 0 3 0c0-8.284-6.716-15-15-15Z"
-        fill="hsl(255 60% 58%)"
+        d="M24 4C13 4 4 13 4 24c0 5.5 2.2 10.5 5.8 14.2C13.5 34.5 18.4 32 24 32c5.6 0 10.5 2.5 14.2 6.2C41.8 34.5 44 29.5 44 24 44 13 35 4 24 4Z"
+        fill="hsl(245 58% 51%)"
       />
+      {/* Bottom arc */}
       <path
-        d="M18 10.5a7.5 7.5 0 0 0-6.36 3.52 1.5 1.5 0 0 0 2.54 1.6A4.5 4.5 0 1 1 18 22.5a1.5 1.5 0 0 0 0 3 7.5 7.5 0 1 0 0-15Z"
-        fill="hsl(255 60% 58%)"
+        d="M24 16c-5.5 0-10 4.5-10 10s4.5 10 10 10 10-4.5 10-10-4.5-10-10-10Z"
+        fill="hsl(245 58% 51%)"
       />
+      {/* White bridge cutout */}
+      <ellipse cx="24" cy="26" rx="4.5" ry="4.5" fill="white" />
+      <rect x="19.5" y="22" width="9" height="4" fill="white" />
     </svg>
-    <span className="text-lg font-bold tracking-tight" style={{ color: "hsl(255 60% 58%)" }}>
+    <span
+      className="font-semibold tracking-tight"
+      style={{
+        color: "hsl(245 58% 51%)",
+        fontSize: "inherit",
+        fontFamily: "'Montserrat', sans-serif",
+        letterSpacing: "-0.01em",
+      }}
+    >
       Skyrise
     </span>
   </div>
