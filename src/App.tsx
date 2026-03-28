@@ -35,6 +35,7 @@ import PersonalInfo from "./pages/PersonalInfo";
 import KYC from "./pages/KYC";
 
 // Admin
+import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 
 const queryClient = new QueryClient();
@@ -74,7 +75,8 @@ const App = () => (
             <Route path="/app/kyc" element={<ProtectedRoute><KYC /></ProtectedRoute>} />
 
             {/* Admin */}
-            <Route path="/admin-sky-987" element={<ProtectedRoute adminOnly><AdminPanel /></ProtectedRoute>} />
+            <Route path="/admin-sky-987" element={<AdminLogin />} />
+            <Route path="/admin-sky-987/dashboard" element={<ProtectedRoute adminOnly><AdminPanel /></ProtectedRoute>} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
