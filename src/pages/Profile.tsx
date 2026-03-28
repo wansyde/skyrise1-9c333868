@@ -9,6 +9,8 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import heroCarBanner from "@/assets/hero-car-banner.jpg";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const financialItems = [
   { label: "Deposit", icon: ArrowDownToLine, href: "/app/wallet/deposit" },
