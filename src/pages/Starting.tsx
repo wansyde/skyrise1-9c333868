@@ -165,7 +165,9 @@ const Starting = () => {
     visibleCards.push({ idx, offset, car: carCampaigns[idx] });
   }
 
-  const featuredCar = carCampaigns[activeIndex];
+  // Showcase = the car that just exited left (one before active)
+  const showcaseIndex = ((activeIndex - 1) % total + total) % total;
+  const featuredCar = carCampaigns[showcaseIndex];
 
   // Preload adjacent featured images for smooth transitions
   useEffect(() => {
