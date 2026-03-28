@@ -773,6 +773,135 @@ const AdminPanel = () => {
           </div>
         </TabsContent>
 
+        {/* KYC TAB */}
+        <TabsContent value="kyc">
+          <div className="glass-card overflow-hidden">
+            <div className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <h2 className="text-sm font-medium flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> KYC Verification</h2>
+              <div className="flex gap-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input placeholder="Search username..." value={kycSearch} onChange={(e) => setKycSearch(e.target.value)} className="pl-9 h-8 text-xs w-40" />
+                </div>
+                <select value={kycFilter} onChange={(e) => setKycFilter(e.target.value)} className="h-8 rounded border border-border bg-background px-2 text-xs">
+                  <option value="">All Statuses</option>
+                  <option value="submitted">Submitted</option>
+                  <option value="verified">Verified</option>
+                  <option value="pending">Pending</option>
+                </select>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-t border-border text-left text-xs text-muted-foreground">
+                    <th className="px-5 py-3 font-medium">Username</th>
+                    <th className="px-5 py-3 font-medium">Full Name</th>
+                    <th className="px-5 py-3 font-medium">ID Type</th>
+                    <th className="px-5 py-3 font-medium">ID Number</th>
+                    <th className="px-5 py-3 font-medium">ID Front</th>
+                    <th className="px-5 py-3 font-medium">ID Back</th>
+                    <th className="px-5 py-3 font-medium">Selfie</th>
+                    <th className="px-5 py-3 font-medium">Status</th>
+                    <th className="px-5 py-3 font-medium">Submitted</th>
+                    <th className="px-5 py-3 font-medium">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(profiles || [])
+                    .filter((p: any) => {
+                      if (kycFilter && p.kyc_status !== kycFilter) return false;
+                      if (kycSearch) {
+                        const q = kycSearch.toLowerCase();
+                        return (p.username || "").toLowerCase().includes(q) || (p.kyc_name || "").toLowerCase().includes(q);
+                      }
+                      return true;
+                    })
+                    .filter((p: any) => p.kyc_status !== "pending" || kycFilter === "pending")
+                    .sort((a: any, b: any) => {
+                      if (a.kyc_status === "submitted" && b.kyc_status !== "submitted") return -1;
+                      if (b.kyc_status === "submitted" && a.kyc_status !== "submitted") return 1;
+                      return new Date(b.kyc_submitted_at || b.created_at).getTime() - new Date(a.kyc_submitted_at || a.created_at).getTime();
+                    })
+                    .map((p: any) => (
+                      <tr key={p.user_id} className="border-t border-border">
+                        <td className="px-5 py-3 text-sm font-medium">{p.username || "—"}</td>
+                        <td className="px-5 py-3 text-sm text-muted-foreground">{p.kyc_name || "—"}</td>
+                        <td className="px-5 py-3 text-xs text-muted-foreground">{p.kyc_id_type || "—"}</td>
+                        <td className="px-5 py-3 text-xs text-muted-foreground font-mono">{p.kyc_id_number || "—"}</td>
+                        <td className="px-5 py-3">
+                          {p.kyc_front_url ? (
+                            <a href={p.kyc_front_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                              <Eye className="h-3 w-3" /> View
+                            </a>
+                          ) : <span className="text-xs text-muted-foreground">—</span>}
+                        </td>
+                        <td className="px-5 py-3">
+                          {p.kyc_back_url ? (
+                            <a href={p.kyc_back_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                              <Eye className="h-3 w-3" /> View
+                            </a>
+                          ) : <span className="text-xs text-muted-foreground">—</span>}
+                        </td>
+                        <td className="px-5 py-3">
+                          {p.kyc_selfie_url ? (
+                            <a href={p.kyc_selfie_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                              <Eye className="h-3 w-3" /> View
+                            </a>
+                          ) : <span className="text-xs text-muted-foreground">—</span>}
+                        </td>
+                        <td className="px-5 py-3">
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${
+                            p.kyc_status === "verified" ? "bg-green-500/15 text-green-400" :
+                            p.kyc_status === "submitted" ? "bg-amber-500/15 text-amber-400" :
+                            "bg-muted text-muted-foreground"
+                          }`}>
+                            {p.kyc_status}
+                          </span>
+                        </td>
+                        <td className="px-5 py-3 text-xs text-muted-foreground">{p.kyc_submitted_at ? formatUSTime(p.kyc_submitted_at) : "—"}</td>
+                        <td className="px-5 py-3">
+                          {p.kyc_status === "submitted" ? (
+                            <Button
+                              size="sm" variant="outline"
+                              className="h-7 text-xs gap-1.5 text-green-400 border-green-400/30 hover:bg-green-500/10"
+                              disabled={processingId === p.user_id}
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                setProcessingId(p.user_id);
+                                try {
+                                  const { error } = await supabase.from("profiles").update({ kyc_status: "verified" } as any).eq("user_id", p.user_id);
+                                  if (error) throw error;
+                                  await logAdminAction("kyc_verify", p.user_id, `Verified KYC for ${p.username || p.email}`);
+                                  toast.success(`KYC verified for ${p.username || p.email}.`);
+                                  queryClient.invalidateQueries({ queryKey: ["admin-profiles"] });
+                                  queryClient.invalidateQueries({ queryKey: ["admin-logs"] });
+                                } catch (err: any) {
+                                  toast.error(err.message || "Failed to verify KYC.");
+                                } finally {
+                                  setProcessingId(null);
+                                }
+                              }}
+                            >
+                              <Check className="h-3 w-3" /> Verify
+                            </Button>
+                          ) : p.kyc_status === "verified" ? (
+                            <span className="text-xs text-green-400">✓ Verified</span>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  {(profiles || []).filter((p: any) => p.kyc_status !== "pending" || kycFilter === "pending").length === 0 && (
+                    <tr><td colSpan={10} className="px-5 py-6 text-center text-sm text-muted-foreground">No KYC submissions found.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </TabsContent>
+
         {/* ADMINS TAB */}
         <TabsContent value="admins">
           <div className="glass-card overflow-hidden">
