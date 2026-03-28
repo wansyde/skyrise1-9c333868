@@ -154,7 +154,10 @@ export type Database = {
           referred_by: string | null
           region: string | null
           saved_wallet_address: string | null
+          saved_wallet_email: string | null
           saved_wallet_name: string | null
+          saved_wallet_network: string | null
+          saved_wallet_username: string | null
           status: string
           task_cycle_completed: boolean
           tasks_completed_today: number
@@ -192,7 +195,10 @@ export type Database = {
           referred_by?: string | null
           region?: string | null
           saved_wallet_address?: string | null
+          saved_wallet_email?: string | null
           saved_wallet_name?: string | null
+          saved_wallet_network?: string | null
+          saved_wallet_username?: string | null
           status?: string
           task_cycle_completed?: boolean
           tasks_completed_today?: number
@@ -230,7 +236,10 @@ export type Database = {
           referred_by?: string | null
           region?: string | null
           saved_wallet_address?: string | null
+          saved_wallet_email?: string | null
           saved_wallet_name?: string | null
+          saved_wallet_network?: string | null
+          saved_wallet_username?: string | null
           status?: string
           task_cycle_completed?: boolean
           tasks_completed_today?: number

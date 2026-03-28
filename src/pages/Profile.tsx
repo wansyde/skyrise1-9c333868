@@ -9,6 +9,8 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import heroCarBanner from "@/assets/hero-car-banner.jpg";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const financialItems = [
   { label: "Deposit", icon: ArrowDownToLine, href: "/app/wallet/deposit" },
@@ -19,18 +21,30 @@ const financialItems = [
 const detailItems = [
   { label: "KYC", icon: IdCard, href: "/app/kyc" },
   { label: "Personal Information", icon: UserCircle, href: "/app/settings" },
-  { label: "Payment Methods", icon: Wallet, href: "/app/wallet" },
+  { label: "Payment Methods", icon: Wallet, href: "/app/wallet/payment-methods" },
 ];
 
 const otherItems = [
   { label: "Contact Us", icon: MessageSquare, href: "/contact" },
-  { label: "Notifications", icon: Bell, href: "/app/profile" },
+  { label: "Notifications", icon: Bell, href: "/app/notifications" },
 ];
 
 const Profile = () => {
-  const { profile, signOut, isAdmin } = useAuth();
+  const { profile, signOut, isAdmin, user } = useAuth();
   const navigate = useNavigate();
   const balance = profile?.balance ?? 0;
+
+  const { data: pendingCount } = useQuery({
+    queryKey: ["notif-badge", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const [{ count: dc }, { count: wc }] = await Promise.all([
+        supabase.from("deposits").select("*", { count: "exact", head: true }).eq("user_id", user!.id).eq("status", "pending"),
+        supabase.from("withdrawals").select("*", { count: "exact", head: true }).eq("user_id", user!.id).eq("status", "pending"),
+      ]);
+      return (dc || 0) + (wc || 0);
+    },
+  });
 
   const handleSignOut = async () => {
     await signOut();
@@ -49,6 +63,11 @@ const Profile = () => {
           >
             <item.icon className="h-[18px] w-[18px] text-muted-foreground" strokeWidth={1.5} />
             <span className="flex-1 text-sm">{item.label}</span>
+            {item.label === "Notifications" && pendingCount && pendingCount > 0 ? (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground px-1.5">
+                {pendingCount}
+              </span>
+            ) : null}
             <ChevronRight className="h-4 w-4 text-muted-foreground/50" strokeWidth={1.5} />
           </Link>
         ))}

@@ -15,8 +15,6 @@ const AppWithdraw = () => {
   const [tab, setTab] = useState<"withdraw" | "history">("withdraw");
   const [step, setStep] = useState<1 | 2>(1);
   const [amount, setAmount] = useState("");
-  const [walletName, setWalletName] = useState("");
-  const [walletAddress, setWalletAddress] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -25,7 +23,20 @@ const AppWithdraw = () => {
   const queryClient = useQueryClient();
   const balance = profile?.balance ?? 0;
 
-  const hasSavedWallet = !!(profile as any)?.saved_wallet_address;
+  const hasSavedWallet = !!profile?.saved_wallet_address;
+
+  const checkPaymentMethod = () => {
+    if (!hasSavedWallet) {
+      toast.error("Please set up your payment method first.", {
+        action: {
+          label: "Set Up",
+          onClick: () => window.location.href = "/app/wallet/payment-methods",
+        },
+      });
+      return false;
+    }
+    return true;
+  };
 
   const { data: history } = useQuery({
     queryKey: ["withdrawal-history", user?.id],
@@ -61,17 +72,7 @@ const AppWithdraw = () => {
       return;
     }
 
-    // First-time user: needs wallet fields filled
-    if (!hasSavedWallet) {
-      if (!walletName.trim()) {
-        toast.error("Please enter a wallet name.");
-        return;
-      }
-      if (!walletAddress.trim()) {
-        toast.error("Please enter your crypto wallet address.");
-        return;
-      }
-    }
+    if (!checkPaymentMethod()) return;
 
     setStep(2);
   };
@@ -79,12 +80,8 @@ const AppWithdraw = () => {
   const handleSubmit = async () => {
     if (!user) return;
 
-    const finalAddress = hasSavedWallet
-      ? (profile as any).saved_wallet_address
-      : walletAddress.trim();
-    const finalName = hasSavedWallet
-      ? (profile as any).saved_wallet_name
-      : walletName.trim();
+    const finalAddress = profile?.saved_wallet_address || "";
+    const finalName = profile?.saved_wallet_name || "";
 
     setLoading(true);
     try {
@@ -111,8 +108,7 @@ const AppWithdraw = () => {
       });
 
       setAmount("");
-      setWalletAddress("");
-      setWalletName("");
+      setPassword("");
       setPassword("");
       setStep(1);
       queryClient.invalidateQueries({ queryKey: ["withdrawal-history"] });
@@ -224,35 +220,9 @@ const AppWithdraw = () => {
                         </div>
                       </div>
 
-                      {/* First-time user: Wallet fields */}
-                      {!hasSavedWallet && (
-                        <>
-                          <div>
-                            <label className="text-sm text-muted-foreground block mb-2">Wallet Name</label>
-                            <Input
-                              type="text"
-                              placeholder="e.g. My TRC-20 Wallet"
-                              value={walletName}
-                              onChange={(e) => setWalletName(e.target.value)}
-                              className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm focus-visible:border-muted-foreground/40"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm text-muted-foreground block mb-2">Wallet Address</label>
-                            <Input
-                              type="text"
-                              placeholder="Enter your USDT (TRC-20) wallet address"
-                              value={walletAddress}
-                              onChange={(e) => setWalletAddress(e.target.value)}
-                              className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm font-mono focus-visible:border-muted-foreground/40"
-                            />
-                          </div>
-                        </>
-                      )}
-
                       <Button
                         className="btn-press h-12 w-full text-sm mt-2"
-                        disabled={!amount || !password || (!hasSavedWallet && (!walletName || !walletAddress))}
+                        disabled={!amount || !password}
                         onClick={handleProceedToStep2}
                       >
                         Continue
@@ -278,32 +248,15 @@ const AppWithdraw = () => {
                           <div className="space-y-2">
                             <div className="flex justify-between">
                               <span className="text-xs text-muted-foreground">Name</span>
-                              <span className="text-xs font-medium">{(profile as any)?.saved_wallet_name || "—"}</span>
+                              <span className="text-xs font-medium">{profile?.saved_wallet_name || "—"}</span>
                             </div>
                             <div className="flex justify-between items-start gap-3">
                               <span className="text-xs text-muted-foreground whitespace-nowrap">Address</span>
-                              <span className="text-xs font-mono text-right break-all">{(profile as any)?.saved_wallet_address}</span>
+                              <span className="text-xs font-mono text-right break-all">{profile?.saved_wallet_address}</span>
                             </div>
                           </div>
                         </div>
-                      ) : (
-                        <div className="glass-card p-4 rounded-xl">
-                          <div className="flex items-center gap-2 mb-3">
-                            <Wallet className="h-4 w-4 text-primary" strokeWidth={1.5} />
-                            <span className="text-sm font-medium">Withdrawal Wallet</span>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="flex justify-between">
-                              <span className="text-xs text-muted-foreground">Name</span>
-                              <span className="text-xs font-medium">{walletName}</span>
-                            </div>
-                            <div className="flex justify-between items-start gap-3">
-                              <span className="text-xs text-muted-foreground whitespace-nowrap">Address</span>
-                              <span className="text-xs font-mono text-right break-all">{walletAddress}</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                      ) : null}
 
                       <div className="flex gap-3 mt-2">
                         <Button variant="outline" className="btn-press h-12 flex-1 text-sm" onClick={() => setStep(1)}>
