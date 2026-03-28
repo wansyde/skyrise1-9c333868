@@ -284,9 +284,6 @@ const Login = () => {
                     <div className="flex flex-col gap-1.5">
                       <div className="flex items-center justify-between">
                         <label className="text-sm font-medium">Password</label>
-                        <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-                          Forgot Password?
-                        </Link>
                       </div>
                       <div className="relative">
                         <Input

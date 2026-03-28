@@ -290,7 +290,7 @@ const Starting = () => {
       if (recordError) throw recordError;
 
       await refreshProfile();
-      toast.success(`Task completed! +${reward.toFixed(4)} AC profit earned.`);
+      // Task completed silently — no toast
       setMatchState("idle");
       setMatchedCar(null);
     } catch (e: any) {

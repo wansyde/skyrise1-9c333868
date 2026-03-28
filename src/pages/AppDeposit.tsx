@@ -81,11 +81,9 @@ const AppDeposit = () => {
                 </div>
 
                 {/* Contact button */}
-                <Button className="btn-press h-12 w-full gap-2 text-sm" asChild>
-                  <a href="mailto:support@skyrise.com">
-                    <MessageCircle className="h-4 w-4" strokeWidth={1.5} />
-                    Contact Customer Service
-                  </a>
+                <Button className="btn-press h-12 w-full gap-2 text-sm">
+                  <MessageCircle className="h-4 w-4" strokeWidth={1.5} />
+                  Contact Customer Service
                 </Button>
               </motion.div>
             ) : (
