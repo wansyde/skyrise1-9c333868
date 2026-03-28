@@ -136,15 +136,18 @@ const Starting = () => {
 
   const getCardStyle = (offset: number) => {
     const absOffset = Math.abs(offset);
-    const scale = offset === 0 ? 1.02 : Math.max(0.7, 0.95 - absOffset * 0.08);
-    const rotateY = offset * -18;
-    const translateX = offset * 135;
-    const translateZ = offset === 0 ? 30 : -absOffset * 50;
-    const opacity = offset === 0 ? 1 : Math.max(0.4, 1 - absOffset * 0.2);
+    const scale = offset === 0 ? 1.08 : Math.max(0.75, 1 - absOffset * 0.08);
+    // Inward curve: cards rotate inward toward center
+    const rotateY = offset * 20;
+    const translateX = offset * 145;
+    const translateZ = offset === 0 ? 60 : -absOffset * 60;
+    // Slight vertical arc — cards at edges dip down
+    const translateY = absOffset * absOffset * 4;
+    const opacity = offset === 0 ? 1 : Math.max(0.45, 1 - absOffset * 0.18);
     const zIndex = 10 - absOffset;
-    const brightness = offset === 0 ? 1.05 : Math.max(0.6, 1 - absOffset * 0.15);
+    const brightness = offset === 0 ? 1.08 : Math.max(0.6, 1 - absOffset * 0.15);
     return {
-      transform: `perspective(1200px) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
+      transform: `perspective(1000px) translateX(${translateX}px) translateY(${translateY}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
       opacity, zIndex,
       filter: `brightness(${brightness})`,
     };
