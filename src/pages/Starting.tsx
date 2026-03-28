@@ -134,18 +134,17 @@ const Starting = () => {
     handleInteraction();
   }, [handleInteraction]);
 
-  const getCardStyle = (offset: number) => {
-    const absOffset = Math.abs(offset);
-    const scale = offset === 0 ? 1.08 : Math.max(0.75, 1 - absOffset * 0.08);
-    // Inward curve: cards rotate inward toward center
-    const rotateY = offset * 20;
-    const translateX = offset * 145;
-    const translateZ = offset === 0 ? 60 : -absOffset * 60;
-    // Slight vertical arc — cards at edges dip down
-    const translateY = absOffset * absOffset * 4;
-    const opacity = offset === 0 ? 1 : Math.max(0.45, 1 - absOffset * 0.18);
-    const zIndex = 10 - absOffset;
-    const brightness = offset === 0 ? 1.08 : Math.max(0.6, 1 - absOffset * 0.15);
+  const getCardStyle = (position: number) => {
+    const scale = position === 0 ? 1.1 : Math.max(0.75, 1 - position * 0.07);
+    // Outward curve: cards rotate away from center (left card faces right, right cards face left)
+    const rotateY = position === 0 ? 0 : position * -18;
+    const translateX = position * 145 - 200; // shift everything left so first card is on the left edge
+    const translateZ = position === 0 ? 60 : -position * 55;
+    // Outward vertical arc — cards rise up at the edges
+    const translateY = position === 0 ? 6 : -(position * position * 2.5);
+    const opacity = position === 0 ? 1 : Math.max(0.45, 1 - position * 0.16);
+    const zIndex = 10 - position;
+    const brightness = position === 0 ? 1.08 : Math.max(0.6, 1 - position * 0.12);
     return {
       transform: `perspective(1000px) translateX(${translateX}px) translateY(${translateY}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
       opacity, zIndex,
@@ -153,11 +152,11 @@ const Starting = () => {
     };
   };
 
+  // Left-anchored: active card is first, rest spread to the right
   const visibleCards = [];
-  const half = Math.floor(VISIBLE_COUNT / 2);
-  for (let offset = -half; offset <= half; offset++) {
-    const idx = ((activeIndex + offset) % total + total) % total;
-    visibleCards.push({ idx, offset, car: carCampaigns[idx] });
+  for (let i = 0; i < VISIBLE_COUNT; i++) {
+    const idx = ((activeIndex + i) % total + total) % total;
+    visibleCards.push({ idx, position: i, car: carCampaigns[idx] });
   }
 
   const featuredCar = carCampaigns[activeIndex];
@@ -375,9 +374,9 @@ const Starting = () => {
               onTouchEnd={handleTouchEnd}
               style={{ background: "radial-gradient(ellipse at center bottom, hsl(var(--primary) / 0.04) 0%, transparent 60%)" }}
             >
-              {visibleCards.map(({ idx, offset, car }) => {
-                const style = getCardStyle(offset);
-                const isCenter = offset === 0;
+              {visibleCards.map(({ idx, position, car }) => {
+                const style = getCardStyle(position);
+                const isActive = position === 0;
                 return (
                   <motion.div
                     key={`${idx}-${car.brand}`}
@@ -390,8 +389,8 @@ const Starting = () => {
                     <div
                       className="w-[130px] h-[165px] sm:w-[145px] sm:h-[180px] rounded-xl overflow-hidden"
                       style={{
-                        boxShadow: isCenter
-                          ? "0 14px 45px rgba(0,0,0,0.18), 0 0 0 1.5px hsl(var(--primary) / 0.15)"
+                        boxShadow: isActive
+                          ? "0 14px 45px rgba(0,0,0,0.18), 0 0 0 2px hsl(var(--primary) / 0.2)"
                           : "0 6px 20px rgba(0,0,0,0.08)",
                       }}
                     >
