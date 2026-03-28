@@ -575,6 +575,21 @@ const AdminPanel = () => {
                         )}
                       </td>
                       <td className="px-5 py-3" onClick={(e) => e.stopPropagation()}>
+                        {editingUser === u.user_id ? (
+                          <div className="flex items-center gap-2">
+                            <Input type="number" value={editCreditScore} onChange={(e) => setEditCreditScore(e.target.value)} className="h-7 w-20 text-xs" min={0} max={100} />
+                            <span className="text-xs text-muted-foreground">%</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+                              <div className="h-full rounded-full transition-all" style={{ width: `${u.credit_score ?? 100}%`, backgroundColor: (u.credit_score ?? 100) >= 80 ? 'hsl(var(--primary))' : (u.credit_score ?? 100) >= 50 ? 'hsl(45 93% 47%)' : 'hsl(var(--destructive))' }} />
+                            </div>
+                            <span className="text-xs tabular-nums font-medium">{u.credit_score ?? 100}%</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-5 py-3" onClick={(e) => e.stopPropagation()}>
                         <button
                           onClick={() => handleToggleTaskAccess(u.user_id, u.status || "active")}
                           className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium transition-colors ${(u.status || "active") === "active" ? "bg-green-500/15 text-green-400 hover:bg-green-500/25" : "bg-destructive/15 text-destructive hover:bg-destructive/25"}`}
