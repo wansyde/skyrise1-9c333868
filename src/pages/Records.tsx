@@ -6,11 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useState, useCallback } from "react";
 import { Car } from "lucide-react";
+import { getCarImage } from "@/lib/car-images";
 
 const FALLBACK_CAR = "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=400&fit=crop&q=80";
 
-const CarImage = ({ src, alt }: { src: string | null; alt: string }) => {
-  const [imgSrc, setImgSrc] = useState(src || FALLBACK_CAR);
+const CarImage = ({ carName }: { carName: string }) => {
+  const resolvedSrc = getCarImage(carName);
+  const [imgSrc, setImgSrc] = useState(resolvedSrc);
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
 
@@ -30,7 +32,7 @@ const CarImage = ({ src, alt }: { src: string | null; alt: string }) => {
       )}
       <img
         src={imgSrc}
-        alt={alt}
+        alt={carName}
         loading="lazy"
         onLoad={() => setLoaded(true)}
         onError={handleError}
@@ -132,7 +134,7 @@ const Records = () => {
               {/* Card */}
               <div className="bg-card rounded-2xl border border-border/50 p-4 shadow-sm">
                 <div className="flex gap-4">
-                  <CarImage src={record.car_image_url} alt={record.car_name} />
+                  <CarImage carName={record.car_name} />
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
