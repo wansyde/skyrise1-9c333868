@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Users, ArrowDownToLine, ArrowUpFromLine, DollarSign, Shield, Search, Pencil, Check, X, Trash2, Power, ArrowUpDown } from "lucide-react";
+import { Users, ArrowDownToLine, ArrowUpFromLine, DollarSign, Shield, Search, Pencil, Check, X, Trash2, Power, ArrowUpDown, RotateCcw } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { VIP_LEVELS } from "@/lib/vip-config";
@@ -246,6 +246,24 @@ const AdminPanel = () => {
     }
   };
 
+  const handleResetCycle = async (userId: string) => {
+    setProcessingId(userId);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ task_cycle_completed: false, tasks_completed_today: 0 } as any)
+        .eq("user_id", userId);
+      if (error) {
+        toast.error("Failed to reset task cycle: " + error.message);
+        return;
+      }
+      toast.success("Task cycle reset successfully.");
+      queryClient.invalidateQueries({ queryKey: ["admin-profiles"] });
+    } finally {
+      setProcessingId(null);
+    }
+  };
+
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDir(sortDir === "asc" ? "desc" : "asc");
@@ -370,6 +388,7 @@ const AdminPanel = () => {
                 <th className="px-5 py-3 font-medium">VIP Level</th>
                 <th className="px-5 py-3 font-medium">Tasks Today</th>
                 <SortHeader field="status">Task Access</SortHeader>
+                <th className="px-5 py-3 font-medium">Cycle</th>
                 <SortHeader field="created_at">Registered</SortHeader>
                 <th className="px-5 py-3 font-medium">Actions</th>
               </tr>
@@ -440,6 +459,20 @@ const AdminPanel = () => {
                       <Power className="h-3 w-3" />
                       {(u.status || "active") === "active" ? "ON" : "OFF"}
                     </button>
+                   </td>
+                  <td className="px-5 py-3">
+                    {u.task_cycle_completed ? (
+                      <button
+                        onClick={() => handleResetCycle(u.user_id)}
+                        disabled={processingId === u.user_id}
+                        className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-amber-500/15 text-amber-400 hover:bg-amber-500/25 transition-colors"
+                      >
+                        <RotateCcw className="h-3 w-3" />
+                        Reset
+                      </button>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Active</span>
+                    )}
                   </td>
                   <td className="px-5 py-3 text-xs text-muted-foreground">
                     {new Date(u.created_at).toLocaleDateString()}
@@ -494,7 +527,7 @@ const AdminPanel = () => {
                 </tr>
               ))}
               {filteredProfiles.length === 0 && (
-                <tr><td colSpan={13} className="px-5 py-6 text-center text-sm text-muted-foreground">No users found.</td></tr>
+                <tr><td colSpan={14} className="px-5 py-6 text-center text-sm text-muted-foreground">No users found.</td></tr>
               )}
             </tbody>
           </table>
