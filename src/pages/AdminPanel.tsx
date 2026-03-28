@@ -356,6 +356,8 @@ const AdminPanel = () => {
                 <th className="px-5 py-3 font-medium">Email</th>
                 <th className="px-5 py-3 font-medium">Phone</th>
                 <th className="px-5 py-3 font-medium">Referral Code</th>
+                <th className="px-5 py-3 font-medium">Referred By</th>
+                <th className="px-5 py-3 font-medium">Referrals</th>
                 <SortHeader field="balance">Wallet Balance</SortHeader>
                 <SortHeader field="advertising_salary">Ad Salary</SortHeader>
                 <th className="px-5 py-3 font-medium">VIP Level</th>
