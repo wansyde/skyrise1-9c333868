@@ -302,8 +302,11 @@ const Starting = () => {
       }
 
       await refreshProfile();
-      setMatchState("idle");
-      setMatchedCar(null);
+      setMatchState("submitted");
+      setTimeout(() => {
+        setMatchState("idle");
+        setMatchedCar(null);
+      }, 1500);
     } catch (e: any) {
       toast.error("Failed to submit: " + e.message);
     } finally {
