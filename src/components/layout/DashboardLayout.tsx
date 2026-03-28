@@ -2,18 +2,13 @@ import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard, Wallet, ArrowDownToLine, ArrowUpFromLine, TrendingUp,
+  LayoutDashboard, ArrowDownToLine, ArrowUpFromLine,
   Clock, Settings, LogOut, Menu, X, ChevronRight
 } from "lucide-react";
 import SkyriseLogo from "@/components/SkyriseLogo";
 
 const navItems = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/deposit", label: "Deposit", icon: ArrowDownToLine },
-  { href: "/dashboard/withdraw", label: "Withdraw", icon: ArrowUpFromLine },
-  { href: "/dashboard/investments", label: "Investments", icon: TrendingUp },
-  { href: "/dashboard/transactions", label: "Transactions", icon: Clock },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/admin-sky-987/dashboard", label: "Overview", icon: LayoutDashboard },
 ];
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
