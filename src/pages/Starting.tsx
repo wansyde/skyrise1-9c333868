@@ -115,10 +115,11 @@ const Starting = () => {
     }
   }, [profile]);
 
+  // Auto-scroll: decrement so cards move right-to-left (new cards enter from right, exit left)
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % total);
+      setActiveIndex((prev) => (prev - 1 + total) % total);
     }, 3000);
     return () => clearInterval(interval);
   }, [isPaused, total]);
