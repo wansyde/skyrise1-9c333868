@@ -86,7 +86,7 @@ const generateAssignmentCode = () => {
     Math.floor(Math.random() * 1000).toString().padStart(3, '0');
 };
 
-type MatchState = "idle" | "matching" | "matched";
+type MatchState = "idle" | "matching" | "matched" | "submitted";
 
 const Starting = () => {
   const { profile, user, refreshProfile } = useAuth();
