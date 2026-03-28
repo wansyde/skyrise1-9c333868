@@ -291,7 +291,7 @@ const Login = () => {
                       <div className="relative">
                         <Input
                           type={showLoginPw ? "text" : "password"}
-                          placeholder="••••••••"
+                          placeholder=""
                           required
                           className="bg-background pr-10"
                           value={loginPassword}
