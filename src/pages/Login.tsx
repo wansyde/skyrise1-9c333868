@@ -274,7 +274,7 @@ const Login = () => {
                       <label className="text-sm font-medium">User ID</label>
                       <Input
                         type="text"
-                        placeholder="Enter your username"
+                        placeholder=""
                         required
                         className="bg-background"
                         value={loginAccount}
@@ -291,7 +291,7 @@ const Login = () => {
                       <div className="relative">
                         <Input
                           type={showLoginPw ? "text" : "password"}
-                          placeholder="••••••••"
+                          placeholder=""
                           required
                           className="bg-background pr-10"
                           value={loginPassword}
@@ -339,7 +339,7 @@ const Login = () => {
                     {/* Username */}
                     <FieldWrapper label="Username" error={regErrors.username}>
                       <Input
-                        placeholder="johndoe"
+                        placeholder=""
                         className="bg-background"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
@@ -350,7 +350,7 @@ const Login = () => {
                     <FieldWrapper label="Phone Number" error={regErrors.phone}>
                       <Input
                         type="tel"
-                        placeholder="+1 (555) 000-0000"
+                        placeholder=""
                         className="bg-background"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
@@ -361,7 +361,7 @@ const Login = () => {
                     <FieldWrapper label="Email" error={regErrors.email}>
                       <Input
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder=""
                         className="bg-background"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -373,7 +373,7 @@ const Login = () => {
                       <div className="relative">
                         <Input
                           type={showRegPw ? "text" : "password"}
-                          placeholder="••••••••"
+                          placeholder=""
                           className="bg-background pr-10"
                           value={regPassword}
                           onChange={(e) => setRegPassword(e.target.value)}
@@ -410,7 +410,7 @@ const Login = () => {
                       <div className="relative">
                         <Input
                           type={showRegConfirm ? "text" : "password"}
-                          placeholder="••••••••"
+                          placeholder=""
                           className="bg-background pr-10"
                           value={regConfirm}
                           onChange={(e) => setRegConfirm(e.target.value)}
@@ -439,7 +439,7 @@ const Login = () => {
                       <div className="relative">
                         <Input
                           type={showWithdrawPw ? "text" : "password"}
-                          placeholder="••••••••"
+                          placeholder=""
                           className="bg-background pr-10"
                           value={withdrawPw}
                           onChange={(e) => setWithdrawPw(e.target.value)}
@@ -474,7 +474,7 @@ const Login = () => {
                     {/* Referral Code */}
                     <FieldWrapper label="Referral Code" error={regErrors.referralCode}>
                       <Input
-                        placeholder="Enter referral code"
+                        placeholder=""
                         className="bg-background uppercase"
                         value={referralCode}
                         onChange={(e) => setReferralCode(e.target.value)}
