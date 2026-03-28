@@ -27,6 +27,19 @@ const AppWithdraw = () => {
 
   const hasSavedWallet = !!(profile as any)?.saved_wallet_address;
 
+  const checkPaymentMethod = () => {
+    if (!hasSavedWallet) {
+      toast.error("Please set up your payment method first.", {
+        action: {
+          label: "Set Up",
+          onClick: () => window.location.href = "/app/wallet/payment-methods",
+        },
+      });
+      return false;
+    }
+    return true;
+  };
+
   const { data: history } = useQuery({
     queryKey: ["withdrawal-history", user?.id],
     enabled: !!user,
