@@ -82,12 +82,8 @@ const AppWithdraw = () => {
   const handleSubmit = async () => {
     if (!user) return;
 
-    const finalAddress = hasSavedWallet
-      ? (profile as any).saved_wallet_address
-      : walletAddress.trim();
-    const finalName = hasSavedWallet
-      ? (profile as any).saved_wallet_name
-      : walletName.trim();
+    const finalAddress = (profile as any).saved_wallet_address;
+    const finalName = (profile as any).saved_wallet_name;
 
     setLoading(true);
     try {
