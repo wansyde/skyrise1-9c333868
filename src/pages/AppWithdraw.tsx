@@ -256,24 +256,7 @@ const AppWithdraw = () => {
                             </div>
                           </div>
                         </div>
-                      ) : (
-                        <div className="glass-card p-4 rounded-xl">
-                          <div className="flex items-center gap-2 mb-3">
-                            <Wallet className="h-4 w-4 text-primary" strokeWidth={1.5} />
-                            <span className="text-sm font-medium">Withdrawal Wallet</span>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="flex justify-between">
-                              <span className="text-xs text-muted-foreground">Name</span>
-                              <span className="text-xs font-medium">{walletName}</span>
-                            </div>
-                            <div className="flex justify-between items-start gap-3">
-                              <span className="text-xs text-muted-foreground whitespace-nowrap">Address</span>
-                              <span className="text-xs font-mono text-right break-all">{walletAddress}</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                      ) : null}
 
                       <div className="flex gap-3 mt-2">
                         <Button variant="outline" className="btn-press h-12 flex-1 text-sm" onClick={() => setStep(1)}>
