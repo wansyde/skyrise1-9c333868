@@ -327,7 +327,10 @@ const Starting = () => {
               <div>
                 <h1 className="text-lg font-semibold tracking-tight">Start Promoting</h1>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {completedCount}/{DAILY_LIMIT} completed today
+                  Set {setProgress.currentSet}/{vipTier.totalSets} · {setProgress.allDone ? "All sets complete" : `${setProgress.tasksInCurrentSet}/${vipTier.tasksPerSet} in set`}
+                </p>
+                <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                  {completedCount}/{DAILY_LIMIT} total today
                 </p>
               </div>
               <div className="relative px-4 py-1.5 rounded-full overflow-hidden" style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.12) 0%, hsl(var(--primary) / 0.06) 100%)", boxShadow: "inset 0 0 0 1px hsl(var(--primary) / 0.2), 0 2px 8px hsl(var(--primary) / 0.1)" }}>
