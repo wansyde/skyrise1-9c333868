@@ -136,15 +136,15 @@ const Starting = () => {
 
   const getCardStyle = (offset: number) => {
     const absOffset = Math.abs(offset);
-    const scale = offset === 0 ? 1.05 : Math.max(0.72, 1 - absOffset * 0.12);
-    const rotateY = offset * -25;
-    const translateX = offset * 110;
-    const translateZ = offset === 0 ? 50 : -absOffset * 80;
-    const opacity = offset === 0 ? 1 : Math.max(0.5, 1 - absOffset * 0.22);
+    const scale = offset === 0 ? 1.02 : Math.max(0.7, 0.95 - absOffset * 0.08);
+    const rotateY = offset * -18;
+    const translateX = offset * 135;
+    const translateZ = offset === 0 ? 30 : -absOffset * 50;
+    const opacity = offset === 0 ? 1 : Math.max(0.4, 1 - absOffset * 0.2);
     const zIndex = 10 - absOffset;
-    const brightness = offset === 0 ? 1.05 : Math.max(0.55, 1 - absOffset * 0.2);
+    const brightness = offset === 0 ? 1.05 : Math.max(0.6, 1 - absOffset * 0.15);
     return {
-      transform: `perspective(900px) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
+      transform: `perspective(1200px) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
       opacity, zIndex,
       filter: `brightness(${brightness})`,
     };
