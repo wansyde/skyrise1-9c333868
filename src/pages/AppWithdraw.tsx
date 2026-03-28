@@ -78,6 +78,12 @@ const AppWithdraw = () => {
 
     if (!checkPaymentMethod()) return;
 
+    // Check KYC after validating amount & password
+    if (!isKycVerified) {
+      setShowKycPrompt(true);
+      return;
+    }
+
     setStep(2);
   };
 
