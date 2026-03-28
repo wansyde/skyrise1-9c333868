@@ -101,7 +101,8 @@ const Starting = () => {
   const [submitting, setSubmitting] = useState(false);
 
   const vipTier = useMemo(() => getVipTier(profile?.vip_level || "Junior"), [profile?.vip_level]);
-  const DAILY_LIMIT = vipTier.taskLimit;
+  const DAILY_LIMIT = vipTier.totalTasks;
+  const setProgress = useMemo(() => getSetProgress(completedCount, vipTier), [completedCount, vipTier]);
 
   const todaySalary = Number(profile?.advertising_salary ?? 0).toFixed(2);
   const userName = profile?.full_name || "User";
