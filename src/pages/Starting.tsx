@@ -358,31 +358,40 @@ const Starting = () => {
             </div>
 
             <div
-              className="relative h-[210px] sm:h-[230px] flex items-center justify-center overflow-hidden rounded-2xl"
+              className="relative h-[210px] sm:h-[230px] overflow-hidden rounded-2xl"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
               style={{ background: "radial-gradient(ellipse at center bottom, hsl(var(--primary) / 0.04) 0%, transparent 60%)" }}
             >
-              {visibleCards.map(({ idx, offset, car }) => {
-                const style = getCardStyle(offset);
-                return (
-                  <motion.div
-                    key={`${idx}-${car.brand}`}
-                    className="absolute cursor-pointer"
-                    onClick={() => goTo(idx)}
-                    animate={{ transform: style.transform, opacity: style.opacity, zIndex: style.zIndex }}
-                    transition={{ type: "spring", stiffness: 250, damping: 30, mass: 0.8 }}
-                    style={{ zIndex: style.zIndex }}
+              <motion.div
+                className="absolute top-1/2 flex items-center"
+                style={{ gap: `${CARD_GAP}px` }}
+                animate={{ x: -(half * CARD_STEP) + (typeof window !== 'undefined' ? window.innerWidth / 2 : 300) - CARD_WIDTH / 2 - (activeIndex * CARD_STEP) + (activeIndex * CARD_STEP) }}
+                // We position so the strip flows: translate based on activeIndex
+                key="strip"
+              >
+                {/* We render using offset-based positioning instead */}
+              </motion.div>
+
+              {visibleCards.map(({ idx, offset, car }) => (
+                <motion.div
+                  key={idx}
+                  className="absolute top-1/2 cursor-pointer"
+                  onClick={() => goTo(idx)}
+                  animate={{
+                    x: `calc(50% + ${offset * CARD_STEP}px - ${CARD_WIDTH / 2}px)`,
+                    y: "-50%",
+                  }}
+                  transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  <div
+                    className="rounded-xl overflow-hidden"
+                    style={{ width: CARD_WIDTH, height: CARD_WIDTH * 1.25, boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}
                   >
-                    <div
-                      className="w-[140px] h-[175px] sm:w-[155px] sm:h-[195px] rounded-xl overflow-hidden"
-                      style={{ boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}
-                    >
-                      <img src={car.image} alt={car.brand} loading="lazy" className="w-full h-full object-cover" />
-                    </div>
-                  </motion.div>
-                );
-              })}
+                    <img src={car.image} alt={car.brand} loading="lazy" className="w-full h-full object-cover" />
+                  </div>
+                </motion.div>
+              ))}
             </div>
 
             <div className="flex justify-center gap-1 mt-3">
