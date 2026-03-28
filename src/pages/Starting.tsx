@@ -100,6 +100,20 @@ const Starting = () => {
   const [matchedAt, setMatchedAt] = useState<Date | null>(null);
   const [completedCount, setCompletedCount] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    const measure = () => {
+      if (carouselRef.current) setContainerWidth(carouselRef.current.offsetWidth);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  const cardWidth = containerWidth > 0 ? (containerWidth - (VISIBLE_COUNT - 1) * CARD_GAP) / VISIBLE_COUNT : 155;
+  const cardStep = cardWidth + CARD_GAP;
 
   const vipTier = useMemo(() => getVipTier(profile?.vip_level || "Junior"), [profile?.vip_level]);
   const DAILY_LIMIT = vipTier.totalTasks;
