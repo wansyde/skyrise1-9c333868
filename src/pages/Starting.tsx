@@ -370,7 +370,7 @@ const Starting = () => {
             </div>
 
             <div
-              className="relative h-[180px] sm:h-[200px] flex items-center justify-center overflow-hidden rounded-2xl"
+              className="relative h-[210px] sm:h-[230px] flex items-center justify-center overflow-hidden rounded-2xl"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
               style={{ background: "radial-gradient(ellipse at center bottom, hsl(var(--primary) / 0.04) 0%, transparent 60%)" }}
@@ -388,10 +388,10 @@ const Starting = () => {
                     style={{ zIndex: style.zIndex }}
                   >
                     <div
-                      className="w-[110px] h-[140px] sm:w-[125px] sm:h-[155px] rounded-xl overflow-hidden"
+                      className="w-[130px] h-[165px] sm:w-[145px] sm:h-[180px] rounded-xl overflow-hidden"
                       style={{
                         boxShadow: isCenter
-                          ? "0 12px 40px rgba(0,0,0,0.15), 0 0 0 1px hsl(var(--primary) / 0.1)"
+                          ? "0 14px 45px rgba(0,0,0,0.18), 0 0 0 1.5px hsl(var(--primary) / 0.15)"
                           : "0 6px 20px rgba(0,0,0,0.08)",
                       }}
                     >
@@ -399,6 +399,7 @@ const Starting = () => {
                     </div>
                   </motion.div>
                 );
+              })}
               })}
             </div>
 
