@@ -248,11 +248,11 @@ const AppWithdraw = () => {
                           <div className="space-y-2">
                             <div className="flex justify-between">
                               <span className="text-xs text-muted-foreground">Name</span>
-                              <span className="text-xs font-medium">{(profile as any)?.saved_wallet_name || "—"}</span>
+                              <span className="text-xs font-medium">{profile?.saved_wallet_name || "—"}</span>
                             </div>
                             <div className="flex justify-between items-start gap-3">
                               <span className="text-xs text-muted-foreground whitespace-nowrap">Address</span>
-                              <span className="text-xs font-mono text-right break-all">{(profile as any)?.saved_wallet_address}</span>
+                              <span className="text-xs font-mono text-right break-all">{profile?.saved_wallet_address}</span>
                             </div>
                           </div>
                         </div>
