@@ -400,7 +400,6 @@ const Starting = () => {
                   </motion.div>
                 );
               })}
-              })}
             </div>
 
             <div className="flex justify-center gap-1 mt-3">
