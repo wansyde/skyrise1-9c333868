@@ -15,8 +15,6 @@ import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
 
 // App pages (mobile-first dashboard)
 import Home from "./pages/Home";
@@ -57,8 +55,6 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
 
             {/* App (authenticated) */}
             <Route path="/app" element={<ProtectedRoute><Home /></ProtectedRoute>} />
