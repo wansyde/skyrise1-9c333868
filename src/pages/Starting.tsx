@@ -161,9 +161,14 @@ const Starting = () => {
   }, [activeIndex, total, goTo]);
 
   const MIN_BALANCE = 100;
+  const isRestricted = profile?.status === "restricted";
 
   // Match Ad handler
   const handleMatchAd = () => {
+    if (isRestricted) {
+      toast.error("Your account is currently restricted. Please contact support.");
+      return;
+    }
     const currentBalance = Number(profile?.balance ?? 0);
 
     if (currentBalance < MIN_BALANCE) {
