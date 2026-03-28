@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowUpFromLine, Clock, Eye, EyeOff, Wallet, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, ArrowUpFromLine, Clock, Eye, EyeOff, Wallet, CheckCircle, ShieldAlert } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,7 +21,11 @@ const AppWithdraw = () => {
   const [receiptData, setReceiptData] = useState<any>(null);
   const { user, profile } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const balance = profile?.balance ?? 0;
+
+  const kycStatus = (profile as any)?.kyc_status || "pending";
+  const isKycVerified = kycStatus === "verified";
 
   const hasSavedWallet = !!profile?.saved_wallet_address;
 
