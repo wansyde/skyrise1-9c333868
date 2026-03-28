@@ -201,15 +201,17 @@ const AdminPanel = () => {
     const newBalance = parseFloat(editBalance);
     const newSalary = parseFloat(editSalary);
     const newTasks = parseInt(editTasksCompleted);
+    const newCreditScore = parseInt(editCreditScore);
     if (isNaN(newBalance) || newBalance < 0) { toast.error("Invalid wallet balance value."); return; }
     if (isNaN(newSalary) || newSalary < 0) { toast.error("Invalid advertising salary value."); return; }
     if (isNaN(newTasks) || newTasks < 0) { toast.error("Invalid tasks completed value."); return; }
+    if (isNaN(newCreditScore) || newCreditScore < 0 || newCreditScore > 100) { toast.error("Credit score must be 0–100."); return; }
     if (!VIP_LEVELS.includes(editVipLevel)) { toast.error("Invalid VIP level."); return; }
 
     const oldUser = (profiles || []).find((p: any) => p.user_id === userId);
     const { error } = await supabase
       .from("profiles")
-      .update({ balance: newBalance, advertising_salary: newSalary, vip_level: editVipLevel, tasks_completed_today: newTasks })
+      .update({ balance: newBalance, advertising_salary: newSalary, vip_level: editVipLevel, tasks_completed_today: newTasks, credit_score: newCreditScore } as any)
       .eq("user_id", userId);
     if (error) { toast.error("Failed to update user."); return; }
 
@@ -219,6 +221,7 @@ const AdminPanel = () => {
     if (oldUser && Number(oldUser.advertising_salary) !== newSalary) changes.push(`Salary: $${oldUser.advertising_salary} → $${newSalary}`);
     if (oldUser && oldUser.vip_level !== editVipLevel) changes.push(`VIP: ${oldUser.vip_level} → ${editVipLevel}`);
     if (oldUser && oldUser.tasks_completed_today !== newTasks) changes.push(`Tasks: ${oldUser.tasks_completed_today} → ${newTasks}`);
+    if (oldUser && Number((oldUser as any).credit_score ?? 100) !== newCreditScore) changes.push(`Credit: ${(oldUser as any).credit_score ?? 100}% → ${newCreditScore}%`);
     if (changes.length > 0) {
       await logAdminAction("user_update", userId, changes.join("; "));
     }
