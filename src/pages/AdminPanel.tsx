@@ -48,7 +48,7 @@ const AdminPanel = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("deposits")
-        .select("*, profiles!deposits_user_id_fkey(full_name, email, username)")
+        .select("*")
         .eq("status", "pending")
         .order("created_at", { ascending: false });
       return data || [];
@@ -60,7 +60,7 @@ const AdminPanel = () => {
     queryFn: async () => {
       const { data } = await supabase
         .from("withdrawals")
-        .select("*, profiles!withdrawals_user_id_fkey(full_name, email, username)")
+        .select("*")
         .eq("status", "pending")
         .order("created_at", { ascending: false });
       return data || [];
@@ -189,17 +189,24 @@ const AdminPanel = () => {
   };
 
   const handleToggleTaskAccess = async (userId: string, currentStatus: string) => {
+    setProcessingId(userId);
     const newStatus = currentStatus === "active" ? "restricted" : "active";
-    const { error } = await supabase
-      .from("profiles")
-      .update({ status: newStatus })
-      .eq("user_id", userId);
-    if (error) {
-      toast.error("Failed to update task access.");
-      return;
+    try {
+      const { error, data } = await supabase
+        .from("profiles")
+        .update({ status: newStatus } as any)
+        .eq("user_id", userId)
+        .select();
+      if (error) {
+        console.error("Task access update error:", error);
+        toast.error("Failed to update task access: " + error.message);
+        return;
+      }
+      toast.success(`Task access ${newStatus === "active" ? "enabled" : "disabled"}.`);
+      queryClient.invalidateQueries({ queryKey: ["admin-profiles"] });
+    } finally {
+      setProcessingId(null);
     }
-    toast.success(`Task access ${newStatus === "active" ? "enabled" : "disabled"}.`);
-    queryClient.invalidateQueries({ queryKey: ["admin-profiles"] });
   };
 
   const handleDeleteUser = async (userId: string) => {
