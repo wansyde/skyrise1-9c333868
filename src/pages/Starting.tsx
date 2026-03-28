@@ -389,8 +389,8 @@ const Starting = () => {
                     <div
                       className="w-[130px] h-[165px] sm:w-[145px] sm:h-[180px] rounded-xl overflow-hidden"
                       style={{
-                        boxShadow: isCenter
-                          ? "0 14px 45px rgba(0,0,0,0.18), 0 0 0 1.5px hsl(var(--primary) / 0.15)"
+                        boxShadow: isActive
+                          ? "0 14px 45px rgba(0,0,0,0.18), 0 0 0 2px hsl(var(--primary) / 0.2)"
                           : "0 6px 20px rgba(0,0,0,0.08)",
                       }}
                     >
