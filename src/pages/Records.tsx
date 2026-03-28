@@ -134,7 +134,7 @@ const Records = () => {
               {/* Card */}
               <div className="bg-card rounded-2xl border border-border/50 p-4 shadow-sm">
                 <div className="flex gap-4">
-                  <CarImage src={record.car_image_url} alt={record.car_name} />
+                  <CarImage carName={record.car_name} />
 
                   {/* Details */}
                   <div className="flex-1 min-w-0">
