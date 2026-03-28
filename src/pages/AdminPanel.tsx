@@ -388,6 +388,7 @@ const AdminPanel = () => {
                 <th className="px-5 py-3 font-medium">VIP Level</th>
                 <th className="px-5 py-3 font-medium">Tasks Today</th>
                 <SortHeader field="status">Task Access</SortHeader>
+                <th className="px-5 py-3 font-medium">Cycle</th>
                 <SortHeader field="created_at">Registered</SortHeader>
                 <th className="px-5 py-3 font-medium">Actions</th>
               </tr>
