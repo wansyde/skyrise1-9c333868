@@ -36,6 +36,7 @@ import KYC from "./pages/KYC";
 import WalletPage from "./pages/WalletPage";
 import PaymentMethods from "./pages/PaymentMethods";
 import Notifications from "./pages/Notifications";
+import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 
 const queryClient = new QueryClient();

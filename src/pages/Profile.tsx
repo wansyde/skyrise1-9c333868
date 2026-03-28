@@ -24,7 +24,7 @@ const detailItems = [
 
 const otherItems = [
   { label: "Contact Us", icon: MessageSquare, href: "/contact" },
-  { label: "Notifications", icon: Bell, href: "/app/profile" },
+  { label: "Notifications", icon: Bell, href: "/app/notifications" },
 ];
 
 const Profile = () => {
