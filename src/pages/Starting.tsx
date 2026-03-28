@@ -135,23 +135,21 @@ const Starting = () => {
   }, [handleInteraction]);
 
   const getCardStyle = (offset: number) => {
-    // offset: -3 to +3, 0 = center (highlighted)
     const absOffset = Math.abs(offset);
-    // U-shape: edges are big, center cards are smaller — but active (0) is biggest with highlight
+    // U-shape: edges big, middle smaller — all same treatment, no highlight
     const edgeScale = 0.95;
     const midScale = 0.78;
-    // Interpolate: abs=0 → 1.08, abs=1 → midScale, abs=2 → midScale, abs=3 → edgeScale
     let scale: number;
-    if (absOffset === 0) scale = 1.08;
-    else if (absOffset >= 3) scale = edgeScale;
-    else scale = midScale + (edgeScale - midScale) * ((absOffset - 1) / 2);
+    if (absOffset >= 3) scale = edgeScale;
+    else if (absOffset === 0) scale = midScale;
+    else scale = midScale + (edgeScale - midScale) * (absOffset / 3);
 
     const rotateY = offset * -12;
     const translateX = offset * 140;
-    const translateZ = absOffset === 0 ? 50 : -absOffset * 30;
-    const opacity = absOffset === 0 ? 1 : Math.max(0.5, 1 - absOffset * 0.12);
+    const translateZ = -absOffset * 30;
+    const opacity = Math.max(0.55, 1 - absOffset * 0.1);
     const zIndex = 10 - absOffset;
-    const brightness = absOffset === 0 ? 1.08 : Math.max(0.65, 1 - absOffset * 0.1);
+    const brightness = Math.max(0.7, 1 - absOffset * 0.08);
     return {
       transform: `perspective(1000px) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
       opacity, zIndex,
