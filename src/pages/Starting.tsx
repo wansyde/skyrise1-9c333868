@@ -134,19 +134,17 @@ const Starting = () => {
     handleInteraction();
   }, [handleInteraction]);
 
-  const getCardStyle = (index: number, active: number, totalVisible: number) => {
-    const offset = index - active;
-    const absOffset = Math.abs(offset);
-    const scale = offset === 0 ? 1.1 : Math.max(0.75, 1 - absOffset * 0.07);
-    // Outward curve: cards rotate away from center
-    const rotateY = offset * -20;
-    const translateX = offset * 145;
-    const translateZ = offset === 0 ? 60 : -absOffset * 55;
-    // Outward vertical arc — cards at edges rise up
-    const translateY = offset === 0 ? 8 : -(absOffset * absOffset * 3);
-    const opacity = offset === 0 ? 1 : Math.max(0.45, 1 - absOffset * 0.18);
-    const zIndex = 10 - absOffset;
-    const brightness = offset === 0 ? 1.08 : Math.max(0.6, 1 - absOffset * 0.15);
+  const getCardStyle = (position: number) => {
+    const scale = position === 0 ? 1.1 : Math.max(0.75, 1 - position * 0.07);
+    // Outward curve: cards rotate away from center (left card faces right, right cards face left)
+    const rotateY = position === 0 ? 0 : position * -18;
+    const translateX = position * 145 - 200; // shift everything left so first card is on the left edge
+    const translateZ = position === 0 ? 60 : -position * 55;
+    // Outward vertical arc — cards rise up at the edges
+    const translateY = position === 0 ? 6 : -(position * position * 2.5);
+    const opacity = position === 0 ? 1 : Math.max(0.45, 1 - position * 0.16);
+    const zIndex = 10 - position;
+    const brightness = position === 0 ? 1.08 : Math.max(0.6, 1 - position * 0.12);
     return {
       transform: `perspective(1000px) translateX(${translateX}px) translateY(${translateY}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
       opacity, zIndex,
