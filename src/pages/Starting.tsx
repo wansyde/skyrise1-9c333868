@@ -405,12 +405,18 @@ const Starting = () => {
               ))}
             </div>
 
-              {/* Featured Showcase on Platform */}
-              <div
-                className="relative flex flex-col items-center pb-6"
-                onTouchStart={handleFeaturedTouchStart}
-                onTouchEnd={handleFeaturedTouchEnd}
-              >
+          {/* Featured Car Showcase */}
+          <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3, duration: 0.5 }} className="mb-6 relative">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">Showcase</h2>
+            </div>
+
+            <div
+              className="relative rounded-2xl overflow-hidden bg-card border border-border"
+              onTouchStart={handleFeaturedTouchStart}
+              onTouchEnd={handleFeaturedTouchEnd}
+            >
+              <div className="relative flex items-center justify-center py-6 md:py-10 overflow-hidden z-10">
                 <AnimatePresence initial={false} mode="popLayout">
                   <motion.div
                     key={`showcase-${activeIndex}`}
@@ -424,46 +430,32 @@ const Starting = () => {
                     <img
                       src={featuredCar.featured}
                       alt={featuredCar.name}
-                      className="w-[75%] sm:w-[65%] aspect-[2/1] object-contain relative z-10"
-                      style={{ filter: "brightness(1.05) contrast(1.03) drop-shadow(0 10px 30px rgba(0,0,0,0.5))" }}
+                      className="w-[75%] sm:w-[65%] aspect-[2/1] object-contain"
+                      style={{ filter: "brightness(1.02) contrast(1.02) saturate(1.05)" }}
                       draggable={false}
                     />
                   </motion.div>
                 </AnimatePresence>
-
-                {/* Circular Platform / Stage */}
-                <div
-                  className="w-[80%] sm:w-[70%] h-[30px] -mt-3 relative z-0"
-                  style={{
-                    background: "radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 50%, transparent 70%)",
-                    borderRadius: "50%",
-                  }}
-                />
-
-                {/* Navigation Arrows */}
-                <button onClick={goFeaturedPrev} className="absolute left-3 top-1/2 -translate-y-1/2 z-20 h-8 w-8 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
-                  <ChevronLeft className="h-4 w-4 text-white/60" />
-                </button>
-                <button onClick={goFeaturedNext} className="absolute right-3 top-1/2 -translate-y-1/2 z-20 h-8 w-8 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center hover:bg-white/20 transition-colors">
-                  <ChevronRight className="h-4 w-4 text-white/60" />
-                </button>
               </div>
 
-              {/* Car Name + Progress Bar */}
-              <div className="px-5 pb-5">
-                <AnimatePresence mode="wait">
-                  <motion.p key={`name-${activeIndex}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.35 }} className="text-center text-[11px] font-medium text-white/50 tracking-widest uppercase mb-3">
-                    {featuredCar.name}
-                  </motion.p>
-                </AnimatePresence>
+              <button onClick={goFeaturedPrev} className="absolute left-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm border border-border/30 flex items-center justify-center hover:bg-background transition-colors">
+                <ChevronLeft className="h-4 w-4 text-foreground/50" />
+              </button>
+              <button onClick={goFeaturedNext} className="absolute right-2 top-1/2 -translate-y-1/2 z-10 h-8 w-8 rounded-full bg-background/80 backdrop-blur-sm border border-border/30 flex items-center justify-center hover:bg-background transition-colors">
+                <ChevronRight className="h-4 w-4 text-foreground/50" />
+              </button>
+            </div>
 
-                {/* Progress dots */}
-                <div className="flex justify-center gap-1">
-                  {carCampaigns.map((_, i) => (
-                    <button key={i} onClick={() => goTo(i)} className={`rounded-full transition-all duration-300 ${i === activeIndex ? "w-5 h-1.5 bg-primary" : "w-1.5 h-1.5 bg-white/20"}`} />
-                  ))}
-                </div>
-              </div>
+            <AnimatePresence mode="wait">
+              <motion.p key={`name-${activeIndex}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }} className="text-center text-xs font-medium text-muted-foreground mt-3 tracking-widest uppercase">
+                {featuredCar.name}
+              </motion.p>
+            </AnimatePresence>
+
+            <div className="flex justify-center gap-1 mt-2">
+              {carCampaigns.map((_, i) => (
+                <button key={i} onClick={() => goTo(i)} className={`rounded-full transition-all duration-300 ${i === activeIndex ? "w-4 h-1 bg-primary/70" : "w-1 h-1 bg-muted-foreground/20"}`} />
+              ))}
             </div>
           </motion.div>
 
