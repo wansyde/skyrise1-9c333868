@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useState, useCallback } from "react";
 import { Car } from "lucide-react";
+import { getCarImage } from "@/lib/car-images";
 
 const FALLBACK_CAR = "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=400&h=400&fit=crop&q=80";
 
