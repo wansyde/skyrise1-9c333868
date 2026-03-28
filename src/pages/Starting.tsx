@@ -73,6 +73,9 @@ const carCampaigns = [
 ];
 
 const VISIBLE_COUNT = 7;
+const CARD_WIDTH = 155; // px
+const CARD_GAP = 12; // px
+const CARD_STEP = CARD_WIDTH + CARD_GAP;
 
 const generateAssignmentCode = () => {
   const now = new Date();
@@ -115,11 +118,11 @@ const Starting = () => {
     }
   }, [profile]);
 
-  // Auto-scroll: decrement so cards move right-to-left (new cards enter from right, exit left)
+  // Auto-scroll: increment so cards flow from right to left
   useEffect(() => {
     if (isPaused) return;
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev - 1 + total) % total);
+      setActiveIndex((prev) => (prev + 1) % total);
     }, 3000);
     return () => clearInterval(interval);
   }, [isPaused, total]);
@@ -135,35 +138,16 @@ const Starting = () => {
     handleInteraction();
   }, [handleInteraction]);
 
-  const getCardStyle = (offset: number) => {
-    const absOffset = Math.abs(offset);
-    const edgeScale = 1.0;
-    const midScale = 0.88;
-    let scale: number;
-    if (absOffset >= 3) scale = edgeScale;
-    else if (absOffset === 0) scale = midScale;
-    else scale = midScale + (edgeScale - midScale) * (absOffset / 3);
-
-    const rotateY = offset * -10;
-    const translateX = offset * 120;
-    const translateZ = -absOffset * 20;
-    const zIndex = 10 - absOffset;
-    return {
-      transform: `perspective(1200px) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
-      opacity: 1, zIndex,
-    };
-  };
-
-  // Center-anchored: active card in the middle, spread left and right
-  const visibleCards = [];
+  // Build a window of cards centered on activeIndex for the flowing strip
   const half = Math.floor(VISIBLE_COUNT / 2);
+  const visibleCards = [];
   for (let offset = -half; offset <= half; offset++) {
     const idx = ((activeIndex + offset) % total + total) % total;
     visibleCards.push({ idx, offset, car: carCampaigns[idx] });
   }
 
-  // Showcase = the leftmost visible card (the one about to exit through the left)
-  const showcaseIndex = ((activeIndex - half) % total + total) % total;
+  // Showcase = the card that just entered from the right (rightmost visible)
+  const showcaseIndex = ((activeIndex + half) % total + total) % total;
   const featuredCar = carCampaigns[showcaseIndex];
 
   // Preload adjacent featured images for smooth transitions
@@ -374,31 +358,31 @@ const Starting = () => {
             </div>
 
             <div
-              className="relative h-[210px] sm:h-[230px] flex items-center justify-center overflow-hidden rounded-2xl"
+              className="relative h-[210px] sm:h-[230px] overflow-hidden rounded-2xl"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
               style={{ background: "radial-gradient(ellipse at center bottom, hsl(var(--primary) / 0.04) 0%, transparent 60%)" }}
             >
-              {visibleCards.map(({ idx, offset, car }) => {
-                const style = getCardStyle(offset);
-                return (
-                  <motion.div
-                    key={`${idx}-${car.brand}`}
-                    className="absolute cursor-pointer"
-                    onClick={() => goTo(idx)}
-                    animate={{ transform: style.transform, opacity: style.opacity, zIndex: style.zIndex }}
-                    transition={{ type: "spring", stiffness: 250, damping: 30, mass: 0.8 }}
-                    style={{ zIndex: style.zIndex }}
+
+              {visibleCards.map(({ idx, offset, car }) => (
+                <motion.div
+                  key={idx}
+                  className="absolute top-1/2 cursor-pointer"
+                  onClick={() => goTo(idx)}
+                  animate={{
+                    x: `calc(50% + ${offset * CARD_STEP}px - ${CARD_WIDTH / 2}px)`,
+                    y: "-50%",
+                  }}
+                  transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  <div
+                    className="rounded-xl overflow-hidden"
+                    style={{ width: CARD_WIDTH, height: CARD_WIDTH * 1.25, boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}
                   >
-                    <div
-                      className="w-[140px] h-[175px] sm:w-[155px] sm:h-[195px] rounded-xl overflow-hidden"
-                      style={{ boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}
-                    >
-                      <img src={car.image} alt={car.brand} loading="lazy" className="w-full h-full object-cover" />
-                    </div>
-                  </motion.div>
-                );
-              })}
+                    <img src={car.image} alt={car.brand} loading="lazy" className="w-full h-full object-cover" />
+                  </div>
+                </motion.div>
+              ))}
             </div>
 
             <div className="flex justify-center gap-1 mt-3">
