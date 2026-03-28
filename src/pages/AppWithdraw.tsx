@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowUpFromLine, Clock, Eye, EyeOff, Wallet, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, ArrowUpFromLine, Clock, Eye, EyeOff, Wallet, CheckCircle, ShieldAlert } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -21,7 +21,11 @@ const AppWithdraw = () => {
   const [receiptData, setReceiptData] = useState<any>(null);
   const { user, profile } = useAuth();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const balance = profile?.balance ?? 0;
+
+  const kycStatus = (profile as any)?.kyc_status || "pending";
+  const isKycVerified = kycStatus === "verified";
 
   const hasSavedWallet = !!profile?.saved_wallet_address;
 
@@ -161,6 +165,35 @@ const AppWithdraw = () => {
                 transition={{ duration: 0.2 }}
                 className="flex flex-col gap-5"
               >
+                {/* KYC Gate */}
+                {!isKycVerified && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex flex-col items-center gap-4 py-10"
+                  >
+                    <div className="h-14 w-14 rounded-full bg-amber-500/10 flex items-center justify-center">
+                      <ShieldAlert className="h-7 w-7 text-amber-400" strokeWidth={1.5} />
+                    </div>
+                    <div className="text-center space-y-1.5">
+                      <h3 className="text-base font-semibold">KYC Verification Required</h3>
+                      <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                        {kycStatus === "submitted"
+                          ? "Your KYC documents are being reviewed. Verification usually takes 24–48 hours."
+                          : "To comply with anti-money laundering regulations, you must complete identity verification before withdrawing funds."}
+                      </p>
+                    </div>
+                    {kycStatus !== "submitted" && (
+                      <Button
+                        onClick={() => navigate("/app/kyc")}
+                        className="mt-2"
+                      >
+                        Complete KYC Verification
+                      </Button>
+                    )}
+                  </motion.div>
+                )}
+                {isKycVerified && (
                 <AnimatePresence mode="wait">
                   {step === 1 ? (
                     <motion.div key="step1" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.2 }} className="flex flex-col gap-5">
@@ -273,6 +306,7 @@ const AppWithdraw = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
+                )}
               </motion.div>
             ) : (
               <motion.div
