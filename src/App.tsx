@@ -35,6 +35,7 @@ import PersonalInfo from "./pages/PersonalInfo";
 import KYC from "./pages/KYC";
 
 // Admin
+import AdminLogin from "./pages/AdminLogin";
 import AdminPanel from "./pages/AdminPanel";
 
 const queryClient = new QueryClient();
