@@ -370,7 +370,9 @@ const Starting = () => {
                   {completedCount}/{DAILY_LIMIT} completed today
                 </p>
               </div>
-              <span className="text-sm font-bold text-primary">{completedCount}/{DAILY_LIMIT}</span>
+              <div className="px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+                <span className="text-[10px] font-semibold tracking-wider uppercase text-primary">{profile?.vip_level || "Junior"}</span>
+              </div>
             </div>
           </motion.div>
 
@@ -514,8 +516,9 @@ const Starting = () => {
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.5 }} className="mb-6">
             <button
               onClick={handleMatchAd}
-              className="w-full py-4 rounded-full font-semibold text-sm tracking-wide flex items-center justify-center gap-2 btn-press transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90"
-              style={{ boxShadow: "0 4px 20px hsl(var(--primary) / 0.3)" }}
+              disabled={isRestricted || Number(profile?.balance ?? 0) < MIN_BALANCE || completedCount >= DAILY_LIMIT}
+              className="w-full py-4 rounded-full font-semibold text-sm tracking-wide flex items-center justify-center gap-2 btn-press transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"
+              style={{ boxShadow: isRestricted ? "none" : "0 4px 20px hsl(var(--primary) / 0.3)" }}
             >
               <Play className="h-4 w-4" fill="currentColor" />
               Match Ad
