@@ -14,7 +14,6 @@ const CarImage = ({ carName }: { carName: string }) => {
   const resolvedSrc = getCarImage(carName);
   const [imgSrc, setImgSrc] = useState(resolvedSrc);
   const [loaded, setLoaded] = useState(false);
-  const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
 
   const handleError = useCallback(() => {
@@ -33,7 +32,7 @@ const CarImage = ({ carName }: { carName: string }) => {
       )}
       <img
         src={imgSrc}
-        alt={alt}
+        alt={carName}
         loading="lazy"
         onLoad={() => setLoaded(true)}
         onError={handleError}
