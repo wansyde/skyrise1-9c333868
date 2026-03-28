@@ -160,6 +160,16 @@ const Starting = () => {
 
   const featuredCar = carCampaigns[activeIndex];
 
+  // Preload adjacent featured images for smooth transitions
+  useEffect(() => {
+    const nextIdx = (activeIndex + 1) % total;
+    const prevIdx = (activeIndex - 1 + total) % total;
+    [nextIdx, prevIdx].forEach((i) => {
+      const img = new Image();
+      img.src = carCampaigns[i].featured;
+    });
+  }, [activeIndex, total]);
+
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const handleTouchStart = (e: React.TouchEvent) => setTouchStart(e.touches[0].clientX);
   const handleTouchEnd = (e: React.TouchEvent) => {
