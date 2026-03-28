@@ -3,24 +3,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowUpFromLine, Clock, Eye, EyeOff, Wallet } from "lucide-react";
+import { ArrowLeft, ArrowUpFromLine, Clock, Eye, EyeOff, Wallet, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import WithdrawalReceipt from "@/components/withdraw/WithdrawalReceipt";
 
 const AppWithdraw = () => {
   const [tab, setTab] = useState<"withdraw" | "history">("withdraw");
   const [step, setStep] = useState<1 | 2>(1);
   const [amount, setAmount] = useState("");
+  const [walletName, setWalletName] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [receiptData, setReceiptData] = useState<any>(null);
   const { user, profile } = useAuth();
   const queryClient = useQueryClient();
   const balance = profile?.balance ?? 0;
+
+  const hasSavedWallet = !!(profile as any)?.saved_wallet_address;
 
   const { data: history } = useQuery({
     queryKey: ["withdrawal-history", user?.id],
@@ -40,7 +45,7 @@ const AppWithdraw = () => {
     setAmount(balance.toFixed(2));
   };
 
-  const handleProceedToAddress = () => {
+  const handleProceedToStep2 = () => {
     if (!user) return;
     const num = Number(amount);
     if (num <= 0 || num > balance) {
@@ -55,21 +60,38 @@ const AppWithdraw = () => {
       toast.error("Incorrect transaction password.");
       return;
     }
+
+    // First-time user: needs wallet fields filled
+    if (!hasSavedWallet) {
+      if (!walletName.trim()) {
+        toast.error("Please enter a wallet name.");
+        return;
+      }
+      if (!walletAddress.trim()) {
+        toast.error("Please enter your crypto wallet address.");
+        return;
+      }
+    }
+
     setStep(2);
   };
 
   const handleSubmit = async () => {
     if (!user) return;
-    if (!walletAddress.trim()) {
-      toast.error("Please enter your crypto wallet address.");
-      return;
-    }
+
+    const finalAddress = hasSavedWallet
+      ? (profile as any).saved_wallet_address
+      : walletAddress.trim();
+    const finalName = hasSavedWallet
+      ? (profile as any).saved_wallet_name
+      : walletName.trim();
 
     setLoading(true);
     try {
       const { data, error } = await supabase.rpc("submit_withdrawal", {
         _amount: Number(amount),
-        _wallet_address: walletAddress.trim(),
+        _wallet_address: finalAddress,
+        _wallet_name: finalName || null,
       } as any);
       if (error) throw error;
       const result = data as any;
@@ -77,12 +99,24 @@ const AppWithdraw = () => {
         toast.error(result.error);
         return;
       }
-      toast.success("Withdrawal request submitted. Status: Pending.");
+
+      // Show receipt
+      setReceiptData({
+        username: profile?.username || profile?.email || "User",
+        amount: Number(amount),
+        vipLevel: profile?.vip_level || "Junior",
+        walletName: finalName || "—",
+        walletAddress: finalAddress,
+        transactionId: crypto.randomUUID(),
+      });
+
       setAmount("");
       setWalletAddress("");
+      setWalletName("");
       setPassword("");
       setStep(1);
       queryClient.invalidateQueries({ queryKey: ["withdrawal-history"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
     } catch (e: any) {
       toast.error(e.message || "Failed to submit withdrawal.");
     } finally {
@@ -190,10 +224,36 @@ const AppWithdraw = () => {
                         </div>
                       </div>
 
+                      {/* First-time user: Wallet fields */}
+                      {!hasSavedWallet && (
+                        <>
+                          <div>
+                            <label className="text-sm text-muted-foreground block mb-2">Wallet Name</label>
+                            <Input
+                              type="text"
+                              placeholder="e.g. My TRC-20 Wallet"
+                              value={walletName}
+                              onChange={(e) => setWalletName(e.target.value)}
+                              className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm focus-visible:border-muted-foreground/40"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm text-muted-foreground block mb-2">Wallet Address</label>
+                            <Input
+                              type="text"
+                              placeholder="Enter your USDT (TRC-20) wallet address"
+                              value={walletAddress}
+                              onChange={(e) => setWalletAddress(e.target.value)}
+                              className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm font-mono focus-visible:border-muted-foreground/40"
+                            />
+                          </div>
+                        </>
+                      )}
+
                       <Button
                         className="btn-press h-12 w-full text-sm mt-2"
-                        disabled={!amount || !password}
-                        onClick={handleProceedToAddress}
+                        disabled={!amount || !password || (!hasSavedWallet && (!walletName || !walletAddress))}
+                        onClick={handleProceedToStep2}
                       >
                         Continue
                       </Button>
@@ -208,18 +268,42 @@ const AppWithdraw = () => {
                         </div>
                       </div>
 
-                      {/* Wallet Address */}
-                      <div>
-                        <label className="text-sm text-muted-foreground block mb-2">Crypto Wallet Address</label>
-                        <Input
-                          type="text"
-                          placeholder="Enter your USDT (TRC-20) wallet address"
-                          value={walletAddress}
-                          onChange={(e) => setWalletAddress(e.target.value)}
-                          className="bg-transparent border-0 border-b border-border rounded-none h-12 text-sm font-mono focus-visible:border-muted-foreground/40"
-                          autoFocus
-                        />
-                      </div>
+                      {/* Saved wallet display for returning users */}
+                      {hasSavedWallet ? (
+                        <div className="glass-card p-4 rounded-xl">
+                          <div className="flex items-center gap-2 mb-3">
+                            <CheckCircle className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                            <span className="text-sm font-medium">Saved Wallet</span>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex justify-between">
+                              <span className="text-xs text-muted-foreground">Name</span>
+                              <span className="text-xs font-medium">{(profile as any)?.saved_wallet_name || "—"}</span>
+                            </div>
+                            <div className="flex justify-between items-start gap-3">
+                              <span className="text-xs text-muted-foreground whitespace-nowrap">Address</span>
+                              <span className="text-xs font-mono text-right break-all">{(profile as any)?.saved_wallet_address}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="glass-card p-4 rounded-xl">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Wallet className="h-4 w-4 text-primary" strokeWidth={1.5} />
+                            <span className="text-sm font-medium">Withdrawal Wallet</span>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex justify-between">
+                              <span className="text-xs text-muted-foreground">Name</span>
+                              <span className="text-xs font-medium">{walletName}</span>
+                            </div>
+                            <div className="flex justify-between items-start gap-3">
+                              <span className="text-xs text-muted-foreground whitespace-nowrap">Address</span>
+                              <span className="text-xs font-mono text-right break-all">{walletAddress}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="flex gap-3 mt-2">
                         <Button variant="outline" className="btn-press h-12 flex-1 text-sm" onClick={() => setStep(1)}>
@@ -227,10 +311,10 @@ const AppWithdraw = () => {
                         </Button>
                         <Button
                           className="btn-press h-12 flex-[2] text-sm"
-                          disabled={loading || !walletAddress.trim()}
+                          disabled={loading}
                           onClick={handleSubmit}
                         >
-                          {loading ? "Processing..." : "Submit Withdrawal"}
+                          {loading ? "Processing..." : "Confirm Withdrawal"}
                         </Button>
                       </div>
                     </motion.div>
@@ -294,6 +378,13 @@ const AppWithdraw = () => {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Receipt Modal */}
+      <AnimatePresence>
+        {receiptData && (
+          <WithdrawalReceipt {...receiptData} onClose={() => setReceiptData(null)} />
+        )}
+      </AnimatePresence>
     </AppLayout>
   );
 };
