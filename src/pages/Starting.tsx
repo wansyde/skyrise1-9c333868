@@ -159,11 +159,12 @@ const Starting = () => {
     };
   };
 
-  // Left-anchored: active card is first, rest spread to the right
+  // Center-anchored: active card in the middle, spread left and right
   const visibleCards = [];
-  for (let i = 0; i < VISIBLE_COUNT; i++) {
-    const idx = ((activeIndex + i) % total + total) % total;
-    visibleCards.push({ idx, position: i, car: carCampaigns[idx] });
+  const half = Math.floor(VISIBLE_COUNT / 2);
+  for (let offset = -half; offset <= half; offset++) {
+    const idx = ((activeIndex + offset) % total + total) % total;
+    visibleCards.push({ idx, offset, car: carCampaigns[idx] });
   }
 
   const featuredCar = carCampaigns[activeIndex];
