@@ -172,35 +172,51 @@ const AppWithdraw = () => {
                 transition={{ duration: 0.2 }}
                 className="flex flex-col gap-5"
               >
-                {/* KYC Gate */}
-                {!isKycVerified && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex flex-col items-center gap-4 py-10"
-                  >
-                    <div className="h-14 w-14 rounded-full bg-amber-500/10 flex items-center justify-center">
-                      <ShieldAlert className="h-7 w-7 text-amber-400" strokeWidth={1.5} />
-                    </div>
-                    <div className="text-center space-y-1.5">
-                      <h3 className="text-base font-semibold">KYC Verification Required</h3>
-                      <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                        {kycStatus === "submitted"
-                          ? "Your KYC documents are being reviewed. Verification usually takes 24–48 hours."
-                          : "To comply with anti-money laundering regulations, you must complete identity verification before withdrawing funds."}
-                      </p>
-                    </div>
-                    {kycStatus !== "submitted" && (
-                      <Button
-                        onClick={() => navigate("/app/kyc")}
-                        className="mt-2"
+                {/* KYC Prompt Modal */}
+                <AnimatePresence>
+                  {showKycPrompt && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-6"
+                      onClick={() => setShowKycPrompt(false)}
+                    >
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                        className="bg-card border border-border rounded-2xl p-6 max-w-sm w-full shadow-xl"
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        Complete KYC Verification
-                      </Button>
-                    )}
-                  </motion.div>
-                )}
-                {isKycVerified && (
+                        <div className="flex flex-col items-center text-center gap-4">
+                          <div className="h-14 w-14 rounded-full bg-amber-500/10 flex items-center justify-center">
+                            <ShieldAlert className="h-7 w-7 text-amber-400" strokeWidth={1.5} />
+                          </div>
+                          <div className="space-y-1.5">
+                            <h3 className="text-base font-semibold">KYC Verification Required</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {kycStatus === "submitted"
+                                ? "Your KYC documents are being reviewed. Verification usually takes 24 hours."
+                                : "To comply with anti-money laundering regulations, you must complete identity verification before withdrawing funds."}
+                            </p>
+                          </div>
+                          <div className="flex gap-3 w-full mt-2">
+                            <Button variant="outline" className="flex-1" onClick={() => setShowKycPrompt(false)}>
+                              Cancel
+                            </Button>
+                            {kycStatus !== "submitted" && (
+                              <Button className="flex-1" onClick={() => navigate("/app/kyc")}>
+                                Complete KYC
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <AnimatePresence mode="wait">
                   {step === 1 ? (
                     <motion.div key="step1" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 10 }} transition={{ duration: 0.2 }} className="flex flex-col gap-5">
@@ -278,8 +294,8 @@ const AppWithdraw = () => {
                         </div>
                       </div>
 
-                      {/* Saved wallet display for returning users */}
-                      {hasSavedWallet ? (
+                      {/* Saved wallet display */}
+                      {hasSavedWallet && (
                         <div className="glass-card p-4 rounded-xl">
                           <div className="flex items-center gap-2 mb-3">
                             <CheckCircle className="h-4 w-4 text-primary" strokeWidth={1.5} />
@@ -296,7 +312,7 @@ const AppWithdraw = () => {
                             </div>
                           </div>
                         </div>
-                      ) : null}
+                      )}
 
                       <div className="flex gap-3 mt-2">
                         <Button variant="outline" className="btn-press h-12 flex-1 text-sm" onClick={() => setStep(1)}>
@@ -313,7 +329,6 @@ const AppWithdraw = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                )}
               </motion.div>
             ) : (
               <motion.div
