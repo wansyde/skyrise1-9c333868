@@ -43,6 +43,7 @@ const AdminPanel = () => {
   const [editSalary, setEditSalary] = useState("");
   const [editVipLevel, setEditVipLevel] = useState("");
   const [editTasksCompleted, setEditTasksCompleted] = useState("");
+  const [editCreditScore, setEditCreditScore] = useState("");
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [deletingUser, setDeletingUser] = useState<string | null>(null);
@@ -188,26 +189,29 @@ const AdminPanel = () => {
     setEditSalary(String(user.advertising_salary ?? 0));
     setEditVipLevel(user.vip_level || "Junior");
     setEditTasksCompleted(String(user.tasks_completed_today ?? 0));
+    setEditCreditScore(String(user.credit_score ?? 100));
   };
 
   const cancelEditing = () => {
     setEditingUser(null);
-    setEditBalance(""); setEditSalary(""); setEditVipLevel(""); setEditTasksCompleted("");
+    setEditBalance(""); setEditSalary(""); setEditVipLevel(""); setEditTasksCompleted(""); setEditCreditScore("");
   };
 
   const saveBalances = async (userId: string) => {
     const newBalance = parseFloat(editBalance);
     const newSalary = parseFloat(editSalary);
     const newTasks = parseInt(editTasksCompleted);
+    const newCreditScore = parseInt(editCreditScore);
     if (isNaN(newBalance) || newBalance < 0) { toast.error("Invalid wallet balance value."); return; }
     if (isNaN(newSalary) || newSalary < 0) { toast.error("Invalid advertising salary value."); return; }
     if (isNaN(newTasks) || newTasks < 0) { toast.error("Invalid tasks completed value."); return; }
+    if (isNaN(newCreditScore) || newCreditScore < 0 || newCreditScore > 100) { toast.error("Credit score must be 0–100."); return; }
     if (!VIP_LEVELS.includes(editVipLevel)) { toast.error("Invalid VIP level."); return; }
 
     const oldUser = (profiles || []).find((p: any) => p.user_id === userId);
     const { error } = await supabase
       .from("profiles")
-      .update({ balance: newBalance, advertising_salary: newSalary, vip_level: editVipLevel, tasks_completed_today: newTasks })
+      .update({ balance: newBalance, advertising_salary: newSalary, vip_level: editVipLevel, tasks_completed_today: newTasks, credit_score: newCreditScore } as any)
       .eq("user_id", userId);
     if (error) { toast.error("Failed to update user."); return; }
 
@@ -217,6 +221,7 @@ const AdminPanel = () => {
     if (oldUser && Number(oldUser.advertising_salary) !== newSalary) changes.push(`Salary: $${oldUser.advertising_salary} → $${newSalary}`);
     if (oldUser && oldUser.vip_level !== editVipLevel) changes.push(`VIP: ${oldUser.vip_level} → ${editVipLevel}`);
     if (oldUser && oldUser.tasks_completed_today !== newTasks) changes.push(`Tasks: ${oldUser.tasks_completed_today} → ${newTasks}`);
+    if (oldUser && Number((oldUser as any).credit_score ?? 100) !== newCreditScore) changes.push(`Credit: ${(oldUser as any).credit_score ?? 100}% → ${newCreditScore}%`);
     if (changes.length > 0) {
       await logAdminAction("user_update", userId, changes.join("; "));
     }
@@ -518,6 +523,7 @@ const AdminPanel = () => {
                     <SortHeader field="advertising_salary">Ad Salary</SortHeader>
                     <th className="px-5 py-3 font-medium">VIP Level</th>
                     <th className="px-5 py-3 font-medium">Tasks Today</th>
+                    <th className="px-5 py-3 font-medium">Credit Score</th>
                     <SortHeader field="status">Task Access</SortHeader>
                     <th className="px-5 py-3 font-medium">Cycle</th>
                     <SortHeader field="created_at">Registered</SortHeader>
@@ -566,6 +572,21 @@ const AdminPanel = () => {
                           <Input type="number" value={editTasksCompleted} onChange={(e) => setEditTasksCompleted(e.target.value)} className="h-7 w-20 text-xs" min={0} />
                         ) : (
                           <span className="text-sm tabular-nums">{u.tasks_completed_today ?? 0}</span>
+                        )}
+                      </td>
+                      <td className="px-5 py-3" onClick={(e) => e.stopPropagation()}>
+                        {editingUser === u.user_id ? (
+                          <div className="flex items-center gap-2">
+                            <Input type="number" value={editCreditScore} onChange={(e) => setEditCreditScore(e.target.value)} className="h-7 w-20 text-xs" min={0} max={100} />
+                            <span className="text-xs text-muted-foreground">%</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+                              <div className="h-full rounded-full transition-all" style={{ width: `${u.credit_score ?? 100}%`, backgroundColor: (u.credit_score ?? 100) >= 80 ? 'hsl(var(--primary))' : (u.credit_score ?? 100) >= 50 ? 'hsl(45 93% 47%)' : 'hsl(var(--destructive))' }} />
+                            </div>
+                            <span className="text-xs tabular-nums font-medium">{u.credit_score ?? 100}%</span>
+                          </div>
                         )}
                       </td>
                       <td className="px-5 py-3" onClick={(e) => e.stopPropagation()}>
