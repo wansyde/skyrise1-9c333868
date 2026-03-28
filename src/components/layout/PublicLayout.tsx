@@ -14,9 +14,12 @@ const navLinks = [
 
 const slideMenuItems = [
   { href: "https://www.wfp.org", label: "WFP", icon: FileText, external: true },
-  { href: "/about", label: "About", icon: Info },
+  { href: "/app/certificate", label: "Certificate", icon: Award },
+  { href: "/app/terms", label: "T & C", icon: Scale },
+  { href: "/app/event", label: "Event", icon: Calendar },
   { href: "/faq", label: "FAQs", icon: HelpCircle },
-  { href: "/contact", label: "Contact", icon: Scale },
+  { href: "/about", label: "About", icon: Info },
+  { href: "/app/aml", label: "AML", icon: Shield },
 ];
 
 const PublicLayout = ({ children }: { children: ReactNode }) => {
