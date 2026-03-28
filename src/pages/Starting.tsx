@@ -150,17 +150,13 @@ const Starting = () => {
     handleInteraction();
   }, [handleInteraction]);
 
-  // Build a window of cards centered on activeIndex for the flowing strip
+  // Showcase = the rightmost visible card on screen
   const half = Math.floor(VISIBLE_COUNT / 2);
-  const visibleCards = [];
-  for (let offset = -half; offset <= half; offset++) {
-    const idx = ((activeIndex + offset) % total + total) % total;
-    visibleCards.push({ idx, offset, car: carCampaigns[idx] });
-  }
-
-  // Showcase = the card that just entered from the right (rightmost visible)
   const showcaseIndex = ((activeIndex + half) % total + total) % total;
   const featuredCar = carCampaigns[showcaseIndex];
+
+  // Strip offset: slide the entire row so activeIndex card is at the left edge
+  const stripOffset = -(activeIndex * cardStep);
 
   // Preload adjacent featured images for smooth transitions
   useEffect(() => {
@@ -376,28 +372,23 @@ const Starting = () => {
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
-              {visibleCards.map(({ idx, offset, car }) => {
-                // offset ranges from -half to +half; position 0 = leftmost card
-                const posIndex = offset + half; // 0 to VISIBLE_COUNT-1
-                const xPos = posIndex * cardStep;
-                return (
-                  <motion.div
-                    key={idx}
-                    className="absolute cursor-pointer"
-                    style={{ top: 10 }}
-                    onClick={() => goTo(idx)}
-                    animate={{ x: xPos }}
-                    transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              <motion.div
+                className="flex absolute"
+                style={{ gap: CARD_GAP, top: 10 }}
+                animate={{ x: stripOffset }}
+                transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                {carCampaigns.map((car, i) => (
+                  <div
+                    key={i}
+                    className="flex-shrink-0 rounded-xl overflow-hidden cursor-pointer"
+                    style={{ width: cardWidth, height: cardWidth * 1.25, boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}
+                    onClick={() => goTo(i)}
                   >
-                    <div
-                      className="rounded-xl overflow-hidden"
-                      style={{ width: cardWidth, height: cardWidth * 1.25, boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}
-                    >
-                      <img src={car.image} alt={car.brand} loading="lazy" className="w-full h-full object-cover" />
-                    </div>
-                  </motion.div>
-                );
-              })}
+                    <img src={car.image} alt={car.brand} loading="lazy" className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </motion.div>
             </div>
 
             <div className="flex justify-center gap-1 mt-3">
