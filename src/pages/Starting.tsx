@@ -136,17 +136,16 @@ const Starting = () => {
 
   const getCardStyle = (offset: number) => {
     const absOffset = Math.abs(offset);
-    // U-shape: edges big, middle smaller — all same treatment, no highlight
-    const edgeScale = 0.95;
-    const midScale = 0.78;
+    const edgeScale = 1.0;
+    const midScale = 0.85;
     let scale: number;
     if (absOffset >= 3) scale = edgeScale;
     else if (absOffset === 0) scale = midScale;
     else scale = midScale + (edgeScale - midScale) * (absOffset / 3);
 
     const rotateY = offset * -12;
-    const translateX = offset * 140;
-    const translateZ = -absOffset * 30;
+    const translateX = offset * 120;
+    const translateZ = -absOffset * 25;
     const opacity = Math.max(0.55, 1 - absOffset * 0.1);
     const zIndex = 10 - absOffset;
     const brightness = Math.max(0.7, 1 - absOffset * 0.08);
@@ -165,8 +164,8 @@ const Starting = () => {
     visibleCards.push({ idx, offset, car: carCampaigns[idx] });
   }
 
-  // Showcase = the car that just exited left (one before active)
-  const showcaseIndex = ((activeIndex - 1) % total + total) % total;
+  // Showcase = the car that just exited right (one after the last visible on the right)
+  const showcaseIndex = ((activeIndex + half + 1) % total + total) % total;
   const featuredCar = carCampaigns[showcaseIndex];
 
   // Preload adjacent featured images for smooth transitions
@@ -394,7 +393,7 @@ const Starting = () => {
                     style={{ zIndex: style.zIndex }}
                   >
                     <div
-                      className="w-[130px] h-[165px] sm:w-[145px] sm:h-[180px] rounded-xl overflow-hidden"
+                      className="w-[140px] h-[175px] sm:w-[155px] sm:h-[195px] rounded-xl overflow-hidden"
                       style={{ boxShadow: "0 8px 25px rgba(0,0,0,0.1)" }}
                     >
                       <img src={car.image} alt={car.brand} loading="lazy" className="w-full h-full object-cover" />
