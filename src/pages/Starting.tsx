@@ -469,16 +469,32 @@ const Starting = () => {
 
           {/* Match Ad Button */}
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.5 }} className="mb-6">
-            <button
-              onClick={handleMatchAd}
-              disabled={isRestricted || Number(profile?.balance ?? 0) < MIN_BALANCE || completedCount >= DAILY_LIMIT}
-              className="w-full py-4 rounded-full font-semibold text-sm tracking-wide flex items-center justify-center gap-2 btn-press transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"
-              style={{ boxShadow: isRestricted ? "none" : "0 4px 20px hsl(var(--primary) / 0.3)" }}
-            >
-              <Play className="h-4 w-4" fill="currentColor" />
-              Match Ad
-              <ChevronRight className="h-4 w-4" />
-            </button>
+            {isCycleCompleted ? (
+              <div className="glass-card p-5 text-center space-y-3">
+                <p className="text-sm font-semibold text-foreground">Your task sets are completed.</p>
+                <p className="text-xs text-muted-foreground">Please contact customer service to renew or upgrade your plan.</p>
+                <a
+                  href="#"
+                  onClick={(e) => e.preventDefault()}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-semibold tracking-wide bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  style={{ boxShadow: "0 4px 20px hsl(var(--primary) / 0.3)" }}
+                >
+                  <Headphones className="h-3.5 w-3.5" />
+                  Contact Support
+                </a>
+              </div>
+            ) : (
+              <button
+                onClick={handleMatchAd}
+                disabled={isRestricted || Number(profile?.balance ?? 0) < MIN_BALANCE || completedCount >= DAILY_LIMIT}
+                className="w-full py-4 rounded-full font-semibold text-sm tracking-wide flex items-center justify-center gap-2 btn-press transition-all duration-300 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"
+                style={{ boxShadow: isRestricted ? "none" : "0 4px 20px hsl(var(--primary) / 0.3)" }}
+              >
+                <Play className="h-4 w-4" fill="currentColor" />
+                Match Ad
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            )}
           </motion.div>
 
           {/* Daily Earnings */}
