@@ -138,35 +138,16 @@ const Starting = () => {
     handleInteraction();
   }, [handleInteraction]);
 
-  const getCardStyle = (offset: number) => {
-    const absOffset = Math.abs(offset);
-    const edgeScale = 1.0;
-    const midScale = 0.88;
-    let scale: number;
-    if (absOffset >= 3) scale = edgeScale;
-    else if (absOffset === 0) scale = midScale;
-    else scale = midScale + (edgeScale - midScale) * (absOffset / 3);
-
-    const rotateY = offset * -10;
-    const translateX = offset * 120;
-    const translateZ = -absOffset * 20;
-    const zIndex = 10 - absOffset;
-    return {
-      transform: `perspective(1200px) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
-      opacity: 1, zIndex,
-    };
-  };
-
-  // Center-anchored: active card in the middle, spread left and right
-  const visibleCards = [];
+  // Build a window of cards centered on activeIndex for the flowing strip
   const half = Math.floor(VISIBLE_COUNT / 2);
+  const visibleCards = [];
   for (let offset = -half; offset <= half; offset++) {
     const idx = ((activeIndex + offset) % total + total) % total;
     visibleCards.push({ idx, offset, car: carCampaigns[idx] });
   }
 
-  // Showcase = the leftmost visible card (the one about to exit through the left)
-  const showcaseIndex = ((activeIndex - half) % total + total) % total;
+  // Showcase = the card that just entered from the right (rightmost visible)
+  const showcaseIndex = ((activeIndex + half) % total + total) % total;
   const featuredCar = carCampaigns[showcaseIndex];
 
   // Preload adjacent featured images for smooth transitions
