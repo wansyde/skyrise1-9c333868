@@ -194,7 +194,7 @@ const Event = () => {
                 <p className="text-sm text-muted-foreground">Earn rewards for consecutive daily check-ins</p>
               </div>
             </div>
-            <button onClick={() => downloadImage(salaryRef, "salary")} className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
+            <button onClick={() => saveImage(salaryRef, "salary")} className="h-8 w-8 rounded-lg bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors">
               <Download className="h-4 w-4 text-muted-foreground" />
             </button>
           </div>
