@@ -75,6 +75,7 @@ const AdminPanel = () => {
   const [adminSearch, setAdminSearch] = useState("");
   const [kycSearch, setKycSearch] = useState("");
   const [kycFilter, setKycFilter] = useState<string>("");
+  const [refSearch, setRefSearch] = useState("");
 
   const queryClient = useQueryClient();
 
