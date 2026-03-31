@@ -562,6 +562,13 @@ const AdminPanel = () => {
                       <td className="px-5 py-3 text-xs text-muted-foreground font-mono">{u.ip_address || "—"}</td>
                       <td className="px-5 py-3 text-xs text-muted-foreground">{u.country || "—"}</td>
                       <td className="px-5 py-3 text-xs text-muted-foreground">{u.region || "—"}</td>
+                      <td className="px-5 py-3">
+                        {u.is_vpn ? (
+                          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-destructive/15 text-destructive">⚠️ VPN</span>
+                        ) : (
+                          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-500/15 text-green-400">✅</span>
+                        )}
+                      </td>
                       <td className="px-5 py-3 text-xs text-muted-foreground font-mono">{u.referral_code || "—"}</td>
                       <td className="px-5 py-3 text-xs text-muted-foreground">
                         {u.referred_by ? (() => { const r = (profiles || []).find((p: any) => p.user_id === u.referred_by); return r ? r.username || r.email : u.referred_by; })() : "—"}
